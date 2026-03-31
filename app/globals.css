@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAFAFA;
+  --foreground: #111111;
+  --color-accent: #81D8D0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-accent: var(--color-accent);
+  --font-sans: var(--font-inter);
+  --font-space: var(--font-space);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Custom Global Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #81D8D0 !important;
+  border-radius: 6px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6BCFC5 !important;
+}
+
+html, body {
+  scrollbar-color: #81D8D0 #FAFAFA !important;
+  scrollbar-width: thin !important;
+}
+
+/* ── Global Selection Styling ── */
+::selection {
+  background-color: #81D8D0;
+  color: #111111;
+}
+::-moz-selection {
+  background-color: #81D8D0;
+  color: #111111;
+}
+
+.card-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(200px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(129, 216, 208, 0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.card-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* ── Footer: animated email underline ── */
+.footer-email-link span.relative::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 1.5px;
+  background-color: #81D8D0;
+  transition: width 0.35s ease-out;
+}
+
+.footer-email-link:hover span.relative::after {
+  width: 100%;
+}
+
+/* ── Footer: social link stagger reveal ── */
+.footer-social-link {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.footer-socials-in-view .footer-social-link {
+  animation: footerSocialIn 0.45s ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes footerSocialIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
