@@ -1,140 +1,31 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FRAME_COUNT = 73; // frame_00.webp to frame_72.webp
-
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasWrapperRef = useRef<HTMLDivElement>(null);
 
   // Hero refs
   const heroContentRef = useRef<HTMLDivElement>(null);
-  const greetingRef = useRef<HTMLSpanElement>(null);
+  const greetingRef = useRef<HTMLParagraphElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
-  const subheadlineRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLButtonElement>(null);
-
-  // About refs
-  const aboutWrapperRef = useRef<HTMLDivElement>(null);
-  const aboutHeadingRef = useRef<HTMLHeadingElement>(null);
-  const aboutTextRef = useRef<HTMLParagraphElement>(null);
-  const statRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  const imagesRef = useRef<HTMLImageElement[]>([]);
-  const scrollObj = useRef({ frame: 0 });
-  const [isPreloaded, setIsPreloaded] = useState(false);
-
-  // Preload Images
-  useEffect(() => {
-    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
-
-    const loadImage = (index: number): Promise<HTMLImageElement> => {
-      return new Promise((resolve) => {
-        const img = document.createElement("img");
-        const paddedIndex = index.toString().padStart(2, "0");
-        img.src = `/Frames/frame_${paddedIndex}_delay-0.041s.webp`;
-        img.onload = () => {
-          images[index] = img;
-          resolve(img);
-        };
-        img.onerror = () => {
-          resolve(img); // resolve even on error to prevent blocking
-        };
-      });
-    };
-
-    const preloadSequence = async () => {
-      const priorityCount = Math.min(5, FRAME_COUNT);
-      const priorityPromises = [];
-      for (let i = 0; i < priorityCount; i++) {
-        priorityPromises.push(loadImage(i));
-      }
-
-      await Promise.all(priorityPromises);
-      imagesRef.current = images;
-      renderFrame(0);
-      setIsPreloaded(true);
-
-      const loadRest = async () => {
-        const restPromises = [];
-        for (let i = priorityCount; i < FRAME_COUNT; i++) {
-          restPromises.push(loadImage(i));
-        }
-        await Promise.all(restPromises);
-        imagesRef.current = images;
-      };
-
-      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-        requestIdleCallback(() => { loadRest(); });
-      } else {
-        setTimeout(loadRest, 1);
-      }
-    };
-
-    preloadSequence();
-  }, []);
-
-  const renderFrame = (index: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const img = imagesRef.current[index];
-    if (!img) return;
-
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
-    const imgWidth = img.width;
-    const imgHeight = img.height;
-
-    if (imgWidth === 0 || imgHeight === 0) return;
-
-    const ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight) * 1.35;
-    const newWidth = imgWidth * ratio;
-    const newHeight = imgHeight * ratio;
-
-    const offsetX = (canvasWidth - newWidth) / 2;
-    const offsetY = canvasHeight - newHeight + (canvasHeight * 0.15);
-
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
-  };
+  const bgTextRef = useRef<HTMLHeadingElement>(null);
+  const subheadlineRef = useRef<HTMLHeadingElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    const resizeCanvas = () => {
-      const canvas = canvasRef.current;
-      const parent = canvas?.parentElement;
-      if (canvas && parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-        renderFrame(Math.round(scrollObj.current.frame));
-      }
-    };
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
     const ctx = gsap.context(() => {
       const validLetters = lettersRef.current.filter(Boolean);
-      const validStats = statRefs.current.filter(Boolean);
-
-      // --- Entrance Animations (Timeline independent of scroll) ---
       const introTl = gsap.timeline();
 
       if (greetingRef.current) gsap.set(greetingRef.current, { yPercent: 100 });
       if (validLetters.length > 0) gsap.set(validLetters, { yPercent: 100, opacity: 0 });
-      gsap.set([subheadlineRef.current, ctaRef.current], { autoAlpha: 0, y: 20 });
-      
-      // Set About elements hidden initially
-      gsap.set([aboutHeadingRef.current, aboutTextRef.current, ...validStats], { opacity: 0, y: 50 });
-      gsap.set(aboutWrapperRef.current, { autoAlpha: 0 });
+      gsap.set([subheadlineRef.current], { autoAlpha: 0, y: 20 });
+      if (imageRef.current) gsap.set(imageRef.current, { autoAlpha: 0, scale: 0.95 });
 
       if (greetingRef.current) {
         introTl.to(greetingRef.current, { yPercent: 0, duration: 1.2, ease: "power4.out" });
@@ -150,7 +41,16 @@ export default function Hero() {
         }, "-=0.9");
       }
 
-      introTl.to([subheadlineRef.current, ctaRef.current], {
+      if (imageRef.current) {
+        introTl.to(imageRef.current, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 1.5,
+          ease: "power4.out",
+        }, "-=1.2");
+      }
+
+      introTl.to([subheadlineRef.current], {
         autoAlpha: 1,
         y: 0,
         duration: 1,
@@ -158,64 +58,55 @@ export default function Hero() {
         ease: "power3.out",
       }, "-=1.2");
 
-      // --- ScrollTrigger Cinematic Timeline ---
-      const mainTl = gsap.timeline({
+      // --- Cinematic Cloud Transition ---
+      const scrollTl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=400%",
-          scrub: 0.5,
+          end: "+=150%", // Determines how long the user scrolls to complete the transition
+          scrub: 1,
           pin: true,
         }
       });
 
-      // Phase 1: Frame sequence (0% to 50%) -> duration length arbitary proportion
-      mainTl.to(scrollObj.current, {
-        frame: FRAME_COUNT - 1,
-        snap: "frame",
-        ease: "none",
-        duration: 1, // represents 50%
-        onUpdate: () => {
-          renderFrame(Math.round(scrollObj.current.frame));
-        },
+      // Scale up the cloud layers
+      // Back layer
+      scrollTl.to(".cloud-layer-back", {
+        scale: 15,
+        duration: 1,
+        ease: "power2.inOut",
+        transformOrigin: "bottom center"
       }, 0);
 
-      // Phase 2: Transition (50% to 100%)
-      
-      // 1. Fade out giant HASSAN text and Hero UI
-      mainTl.to(heroContentRef.current, {
+      // Front layer scales slightly larger/faster
+      scrollTl.to(".cloud-layer-front", {
+        scale: 20,
+        duration: 1,
+        ease: "power2.inOut",
+        transformOrigin: "bottom center"
+      }, 0);
+
+      // Bubbles floating up and fading
+      scrollTl.to(".bubble", {
+        y: -300,
         opacity: 0,
-        duration: 0.5,
-      }, 1);
-
-      // 2. Animate canvas to the left
-      mainTl.to(canvasWrapperRef.current, {
-        xPercent: -60, // Move canvas visually out of the way to the left
-        duration: 1, // Spans the entire phase 2
-        ease: "power1.inOut"
-      }, 1);
-
-      // 3. Make the About wrapper visible (autoAlpha)
-      mainTl.to(aboutWrapperRef.current, {
-        autoAlpha: 1,
-        duration: 0.1
-      }, 1);
-
-      // 4. Animate the 'About' content in (right side)
-      mainTl.to([aboutHeadingRef.current, aboutTextRef.current, ...validStats], {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
         stagger: 0.1,
-        ease: "power1.out"
-      }, 1.2); // Starts slightly after canvas starts moving
+        duration: 0.8,
+        ease: "power1.out",
+      }, 0);
+
+      // Background text becomes pure black as cloud covers it
+      if (bgTextRef.current) {
+        scrollTl.to(bgTextRef.current, {
+          opacity: 1,
+          duration: 1,
+          ease: "power2.inOut",
+        }, 0);
+      }
 
     }, containerRef);
 
-    return () => {
-      ctx.revert();
-      window.removeEventListener("resize", resizeCanvas);
-    };
+    return () => ctx.revert();
   }, []);
 
   const title = "HASSAN";
@@ -223,130 +114,126 @@ export default function Hero() {
   return (
     <div className="w-full relative">
       <section
-        id="story-wrapper"
+        id="hero"
         ref={containerRef}
-        className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#f8f9fa]"
+        className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#ffffff]"
       >
         {/* ======================= */}
-        {/* PHASE 1: HERO CONTENT   */}
+        {/* BACKGROUND TEXT         */}
         {/* ======================= */}
-        <div ref={heroContentRef} className="absolute inset-0 z-[10] w-full h-full pointer-events-none flex justify-center">
-          <div className="w-full max-w-[90rem] h-full px-6 lg:px-12 flex flex-col items-start justify-center">
-            <div className="w-full lg:w-[65%]">
-              <p className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium mb-4 pb-2 overflow-hidden">
-                <span ref={greetingRef} className="inline-block">Hey, I'm</span>
-              </p>
-              <div className="overflow-visible w-full">
-                <h1 className="font-space flex text-[clamp(5rem,12vw,16rem)] font-black leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap">
-                  {title.split("").map((char, index) => (
-                    <span
-                      key={index}
-                      ref={(el) => { if (el) lettersRef.current[index] = el; }}
-                      className="inline-block"
-                    >
-                      {char}
-                    </span>
-                  ))}
-                </h1>
-              </div>
-
-              <div className="mt-4 lg:mt-4 pointer-events-auto">
-                <p
-                  ref={subheadlineRef}
-                  className="max-w-[420px] font-sans text-base sm:text-lg lg:text-xl leading-relaxed text-[#555555]"
-                >
-                  A hybrid creative engineer specializing in scalable AI infrastructure and high-end, motion-rich web applications.
-                </p>
-
-                <div className="mt-8 overflow-hidden flex justify-start">
-                  <button
-                    ref={ctaRef}
-                    className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full bg-[#111111] border border-[#111111] px-8 py-4 font-sans text-base font-bold text-white transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-xl"
-                  >
-                    <span className="relative z-10 transition-colors duration-300">Explore Work</span>
-                    <svg className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="absolute inset-0 z-[35] w-full h-full flex items-center justify-center pointer-events-none overflow-hidden">
+          <h1 ref={bgTextRef} className="font-space flex text-[clamp(8rem,25vw,30rem)] font-black leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap opacity-[0.25] md:opacity-[0.15]">
+            {title.split("").map((char, index) => (
+              <span
+                key={index}
+                ref={(el) => { if (el) lettersRef.current[index] = el; }}
+                className="inline-block"
+              >
+                {char}
+              </span>
+            ))}
+          </h1>
         </div>
 
         {/* ======================= */}
-        {/* THE CANVAS SUBJECT      */}
+        {/* THE CENTER IMAGE        */}
         {/* ======================= */}
-        {/* Centered initially, smoothly transitions to the left in Phase 2 */}
-        <div
-          ref={canvasWrapperRef}
-          className={`absolute inset-y-0 right-0 z-[2] flex h-full w-full lg:w-[65%] items-center justify-center pointer-events-none transition-opacity duration-1000 ease-in-out ${isPreloaded ? "opacity-100" : "opacity-0"}`}
-        >
-          <canvas
-            ref={canvasRef}
-            className="h-full w-full object-contain"
-            style={{
-              mixBlendMode: 'multiply',
-              WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)',
-              maskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)'
-            }}
+        <div className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none">
+          <img
+            ref={imageRef}
+            src="/Main.png"
+            alt="Hassan"
+            className="h-full w-auto object-contain object-bottom"
           />
         </div>
 
         {/* ======================= */}
-        {/* PHASE 2: ABOUT CONTENT  */}
+        {/* FOREGROUND CONTENT      */}
         {/* ======================= */}
-        <div 
-          ref={aboutWrapperRef}
-          className="absolute right-0 lg:right-[10%] top-0 h-full w-full px-6 lg:px-0 lg:w-[40%] flex items-center z-[15] pointer-events-none"
-        >
-          <div className="flex flex-col gap-10 w-full pointer-events-auto mt-24 lg:mt-0">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="block w-5 h-px bg-[#81D8D0]" />
-                <span className="font-space text-xs font-bold uppercase tracking-[0.2em] text-[#81D8D0]">
-                  Introduction
-                </span>
-              </div>
-              
-              <h2 ref={aboutHeadingRef} className="font-space text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter text-[#111111] leading-[1.05]">
-                Engineer by craft,<br/>
-                <span className="text-[#81D8D0]">thinker by nature.</span>
-              </h2>
-            </div>
-            
-            <p ref={aboutTextRef} className="text-lg sm:text-xl md:text-2xl text-[#555555] leading-relaxed max-w-2xl font-medium">
-              I'm Hassan — an AI/ML Engineer specialising in deep learning, NLP, and intelligent systems. I love turning complex research into products that actually ship and change the way people interact with technology.
-            </p>
+        <div ref={heroContentRef} className="absolute inset-0 z-[40] w-full h-full pointer-events-none">
+          <div className="relative w-full max-w-[90rem] mx-auto h-full px-6 lg:px-12">
 
-            <div className="flex flex-col sm:flex-row gap-6 md:gap-12 w-full mt-4">
-              <div ref={(el) => { if(el) statRefs.current[0] = el; }} className="stat-item flex flex-col border-l-4 border-[#E5E5E5] pl-6 transition-colors duration-500 hover:border-[#81D8D0]">
-                <span className="font-space font-black text-4xl sm:text-5xl lg:text-6xl text-[#111111] tracking-tighter">
-                  15<span className="text-[#81D8D0]">+</span>
-                </span>
-                <span className="font-space text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#888888] mt-2">
-                  Projects Shipped
-                </span>
-              </div>
-
-              <div ref={(el) => { if(el) statRefs.current[1] = el; }} className="stat-item flex flex-col border-l-4 border-[#E5E5E5] pl-6 transition-colors duration-500 hover:border-[#81D8D0]">
-                <span className="font-space font-black text-4xl sm:text-5xl lg:text-6xl text-[#111111] tracking-tighter">
-                  100<span className="text-[#81D8D0]">%</span>
-                </span>
-                <span className="font-space text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#888888] mt-2">
-                  Satisfaction Rate
-                </span>
-              </div>
-
-              <div ref={(el) => { if(el) statRefs.current[2] = el; }} className="stat-item flex flex-col border-l-4 border-[#E5E5E5] pl-6 transition-colors duration-500 hover:border-[#81D8D0]">
-                <span className="font-space font-black text-4xl sm:text-5xl lg:text-6xl text-[#111111] tracking-tighter">
-                  3<span className="text-[#81D8D0]">+</span>
-                </span>
-                <span className="font-space text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#888888] mt-2">
-                  Years in Research
-                </span>
+            {/* Top Left Text */}
+            <div className="absolute top-[20%] left-6 lg:left-12 z-20 pointer-events-auto">
+              <div className="overflow-hidden">
+                <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90">
+                  Hey, I'm<br />
+                  {/* I'm Hassan */}
+                </p>
               </div>
             </div>
+
+            {/* Bottom Right Text */}
+            <div className="absolute bottom-[2%] sm:bottom-[5%] lg:bottom-[8%] right-6 lg:right-12 xl:right-16 z-20 pointer-events-auto">
+              <div className="overflow-hidden">
+                <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[260px] sm:max-w-[300px] lg:max-w-[360px]">
+                  A hybrid creative engineer specializing in AI infrastructure & motion-rich web apps.
+                </h2>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ======================= */}
+        {/* CLOUDS FOR TRANSITION   */}
+        {/* ======================= */}
+        <div className="cloud-wrapper absolute inset-0 z-[30] pointer-events-none overflow-visible">
+
+          {/* FLOATING PARTICLES */}
+          <div className="particles absolute inset-0 z-[25]">
+            {/* Left reference bubbles */}
+            <div className="bubble absolute bottom-[12vh] left-[8vw] w-[60px] h-[60px] rounded-full bg-[#3bd6c6] shadow-[0_0_20px_#3bd6c6] opacity-90"></div>
+            <div className="bubble absolute bottom-[5vh] -left-[1vw] w-[90px] h-[90px] rounded-full bg-[#3bd6c6] shadow-[0_0_30px_#3bd6c6] opacity-80"></div>
+            <div className="bubble absolute bottom-[8vh] left-[13vw] w-[35px] h-[35px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-100"></div>
+
+            {/* Right reference bubbles */}
+            <div className="bubble absolute bottom-[18vh] right-[4vw] w-[45px] h-[45px] rounded-full bg-[#3bd6c6] shadow-[0_0_15px_#3bd6c6] opacity-90"></div>
+            <div className="bubble absolute bottom-[8vh] -right-[1vw] w-[75px] h-[75px] rounded-full bg-[#3bd6c6] shadow-[0_0_25px_#3bd6c6] opacity-80"></div>
+            <div className="bubble absolute bottom-[15vh] right-[9vw] w-[25px] h-[25px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-100"></div>
+            <div className="bubble absolute bottom-[5vh] right-[14vw] w-[30px] h-[30px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-70"></div>
+          </div>
+
+          {/* BACK CLOUD LAYER (Depth) */}
+          <div className="cloud-layer-back absolute inset-0 origin-bottom">
+            {/* Base block for depth layer */}
+            <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[18vh] bg-[#e6e6e6]"></div>
+
+            {/* Left Corner Bumps */}
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[20vw] h-[20vw] -left-[8vw] -bottom-[7vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[26vw] h-[26vw] -left-[12vw] -bottom-[15vw]"></div>
+
+            {/* Middle Bottom Bumps */}
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[22vw] h-[22vw] left-[4vw] -bottom-[14vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[28vw] h-[28vw] left-[21vw] -bottom-[19vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[34vw] h-[34vw] left-[41vw] -bottom-[24vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[24vw] h-[24vw] right-[19vw] -bottom-[15vw]"></div>
+
+            {/* Right Corner Bumps */}
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[18vw] h-[18vw] right-[5vw] -bottom-[9vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[30vw] h-[30vw] -right-[12vw] -bottom-[19vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[22vw] h-[22vw] -right-[8vw] -bottom-[11vw]"></div>
+          </div>
+
+          {/* FRONT CLOUD LAYER */}
+          <div className="cloud-layer-front absolute inset-0 origin-bottom">
+            {/* Base block to strictly prevent any white gaps at the very bottom edge */}
+            <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[15vh] bg-[#f2f2f2]"></div>
+
+            {/* Left Corner Bumps */}
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[18vw] h-[18vw] -left-[8vw] -bottom-[8vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[24vw] h-[24vw] -left-[12vw] -bottom-[16vw]"></div>
+
+            {/* Middle Bottom Bumps */}
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[20vw] h-[20vw] left-[5vw] -bottom-[15vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[26vw] h-[26vw] left-[22vw] -bottom-[20vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[32vw] h-[32vw] left-[42vw] -bottom-[25vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[22vw] h-[22vw] right-[20vw] -bottom-[16vw]"></div>
+
+            {/* Right Corner Bumps */}
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[16vw] h-[16vw] right-[6vw] -bottom-[10vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[28vw] h-[28vw] -right-[12vw] -bottom-[20vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[20vw] h-[20vw] -right-[8vw] -bottom-[12vw]"></div>
           </div>
         </div>
 

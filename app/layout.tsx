@@ -17,9 +17,6 @@ export const metadata: Metadata = {
   description: "Building scalable AI models and intelligent web experiences.",
 };
 
-import Navbar from "@/src/components/Navbar/Navbar";
-import Footer from "@/src/components/Footer/Footer";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,12 +25,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans transition-colors relative">
-        <Navbar />
+      <body className="font-sans transition-colors relative">
         {children}
-        <Footer />
       </body>
     </html>
   );

@@ -2,14 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   const logoLettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+
+  useEffect(() => {
+    // Cross-page navigation scroll fix for App Router
+    if (pathname === "/" && typeof window !== "undefined" && window.location.hash) {
+      const id = window.location.hash.slice(1);
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,33 +33,39 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    // Intersection Observer for active nav section
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.5,
-    };
-
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
+    const handleScrollTarget = () => {
+      const sectionIds = ["experience", "products", "demos", "contact"];
+      let current = "";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // Active if the section's top is past the upper third of the screen
+          // and the section hasn't completely scrolled out of view.
+          if (rect.top <= window.innerHeight / 3 && rect.bottom >= 100) {
+            current = id;
+          }
         }
-      });
-    }, observerOptions);
-
-    const sectionIds = ["expertise", "projects", "experience", "contact"];
-    const sections = sectionIds.map((id) => document.getElementById(id)).filter(Boolean);
-
-    sections.forEach((section) => {
-      if (section) sectionObserver.observe(section);
-    });
-
-    return () => {
-      sections.forEach((section) => {
-        if (section) sectionObserver.unobserve(section);
-      });
+      }
+      
+      if (current) {
+        setActiveSection(current);
+      } else if (window.scrollY < 200) {
+        // If we are at the very top, clear active section
+        setActiveSection("");
+      }
     };
+
+    window.addEventListener("scroll", handleScrollTarget, { passive: true });
+    
+    // Set initial active state if loaded with hash
+    if (window.location.hash) {
+      setActiveSection(window.location.hash.slice(1));
+    } else {
+      handleScrollTarget(); 
+    }
+
+    return () => window.removeEventListener("scroll", handleScrollTarget);
   }, []);
 
   const handleLogoEnter = () => {
@@ -64,72 +83,92 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b ${scrolled
-            ? "bg-[#FAFAFA]/95 backdrop-blur-lg border-[#E5E5E5] py-4 shadow-sm"
-            : "bg-transparent border-transparent py-6 md:py-8"
+        className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[calc(100%-2rem)] md:w-auto rounded-2xl md:rounded-full bg-[#ffffff]/80 backdrop-blur-xl border border-[#e6e6e6] shadow-sm ${scrolled
+            ? "top-3 sm:top-4 py-2 sm:py-3"
+            : "top-4 sm:top-6 py-3 sm:py-4"
           }`}
       >
-        <div className="mx-auto max-w-[90rem] px-6 lg:px-12 flex items-center justify-between">
+        <div className="w-full h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between md:justify-center md:gap-16 lg:gap-32">
           {/* Logo */}
           <Link
             href="/"
             className="group flex items-center gap-2"
             onMouseEnter={handleLogoEnter}
           >
-            <span className="flex font-space text-2xl font-black text-[#111111] tracking-tighter">
+            <span className="flex font-space text-xl sm:text-2xl font-black text-[#111111] tracking-tighter uppercase drop-shadow-sm mix-blend-multiply">
               {logoText.split("").map((char, index) => (
                 <span
                   key={index}
-                  ref={(el) => { logoLettersRef.current[index] = el; }}
+                  ref={(el) => { if (el) logoLettersRef.current[index] = el; }}
                   className="inline-block"
                 >
                   {char}
                 </span>
               ))}
             </span>
-            <span className="h-1.5 w-1.5 rounded-full bg-[#81D8D0]" />
+            <span className="h-2 w-2 rounded-full bg-[#3bd6c6] shadow-[0_0_8px_#3bd6c6]" />
           </Link>
 
           {/* Centre nav links */}
-          <div className="hidden md:flex items-center gap-7">
-            {["Expertise", "Projects", "Experience"].map((item) => {
-              const elementId = item.toLowerCase();
-              const isActive = activeSection === elementId;
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            {[
+              { name: "Experience", href: "/#experience" },
+              { name: "Products", href: "/#products" },
+              { name: "Demos", href: "/#demos" },
+              { name: "Case Studies", href: "/case-studies" }
+            ].map((item) => {
+              const isActive = item.href.startsWith("/#") 
+                ? activeSection === item.href.split("#")[1] 
+                : pathname === item.href;
               return (
                 <Link
-                  key={item}
-                  href={`#${elementId}`}
-                  className="relative flex flex-col items-center group"
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    if (item.href.startsWith("/#")) {
+                      const id = item.href.split("#")[1];
+                      setActiveSection(id);
+                      if (pathname === "/") {
+                        e.preventDefault();
+                        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+                        window.history.pushState(null, "", `/#${id}`);
+                      }
+                    }
+                  }}
+                  className="relative flex flex-col items-center group mix-blend-multiply"
                 >
-                  <span className={`text-sm font-medium transition-colors ${isActive ? "text-[#111111]" : "text-[#333333] group-hover:text-[#111111]"
+                  <span className={`whitespace-nowrap text-sm font-medium transition-colors duration-300 ${isActive ? "text-[#111111]" : "text-[#555555] group-hover:text-[#111111]"
                     }`}>
-                    {item}
+                    {item.name}
                   </span>
-                  {/* Active Indicator Dot */}
+                  {/* Active Indicator Line */}
                   <span
-                    className={`absolute -bottom-[10px] w-1 h-1 rounded-full bg-[#81D8D0] transition-transform duration-300 origin-center ${isActive ? "scale-100" : "scale-0"
-                      }`}
+                    className={`absolute -bottom-[6px] left-0 w-full h-[2px] rounded-full bg-[#3bd6c6] shadow-[0_0_8px_#3bd6c6] transition-transform duration-300 origin-center ${isActive ? "scale-x-100" : "scale-x-0"}`}
                   />
                 </Link>
               );
             })}
-            <div className="relative flex flex-col items-center group">
+            <div className="relative flex flex-col items-center group ml-2 lg:ml-4 block p-1">
               <Link
-                href="#contact"
-                className="rounded-full bg-[#111111] px-6 py-2.5 text-sm font-semibold text-[#FAFAFA] transition-all hover:bg-[#333333] hover:scale-105 active:scale-95"
+                href="/#contact"
+                onClick={(e) => {
+                  if (pathname === "/") {
+                    e.preventDefault();
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                    window.history.pushState(null, "", "/#contact");
+                  }
+                }}
+                className="whitespace-nowrap rounded-full bg-[#111111] px-5 py-2 text-sm font-semibold text-[#ffffff] transition-all duration-300 hover:bg-[#3bd6c6] hover:text-[#111111] hover:shadow-[0_0_15px_#3bd6c6]"
               >
                 Let's Talk
               </Link>
-              <span
-                className={`absolute -bottom-3 w-1 h-1 rounded-full bg-[#81D8D0] transition-transform duration-300 origin-center ${activeSection === "contact" ? "scale-100" : "scale-0"
-                  }`}
-              />
+
             </div>
           </div>
 
           {/* Mobile Nav Toggle */}
           <button
-            className="relative md:hidden flex flex-col items-center justify-center w-8 h-8 z-[60] focus:outline-none"
+            className="relative md:hidden flex flex-col items-center justify-center w-8 h-8 z-[60] focus:outline-none mix-blend-multiply"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
             aria-label="Toggle mobile menu"
           >
@@ -146,24 +185,41 @@ export default function Navbar() {
           }`}
       >
         <div
-          className="absolute inset-0 bg-[#FAFAFA]/95 backdrop-blur-lg"
+          className="absolute inset-0 bg-[#ffffff]/90 backdrop-blur-xl"
           onClick={closeMobileMenu}
         />
 
         {/* Drawer Menu */}
         <div
-          className={`absolute top-0 right-0 w-full sm:w-[80%] max-w-sm h-full bg-[#FAFAFA] border-l border-[#E5E5E5]/50 flex flex-col justify-center px-12 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isMobileOpen ? "translate-x-0" : "translate-x-full"
+          className={`absolute top-0 right-0 w-full sm:w-[80%] max-w-sm h-full bg-[#ffffff] border-l border-[#e6e6e6]/50 flex flex-col justify-center px-12 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isMobileOpen ? "translate-x-0" : "translate-x-full"
             }`}
         >
           <div className="flex flex-col gap-10">
-            {["Expertise", "Projects", "Experience", "Contact"].map((item) => (
+            {[
+              { name: "Experience", href: "/#experience" },
+              { name: "Products", href: "/#products" },
+              { name: "Demos", href: "/#demos" },
+              { name: "Case Studies", href: "/case-studies" },
+              { name: "Contact", href: "/#contact" }
+            ].map((item) => (
               <Link
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                onClick={closeMobileMenu}
-                className="font-space text-3xl font-black uppercase text-[#111111] hover:text-[#81D8D0] transition-colors"
+                key={item.name}
+                href={item.href}
+                onClick={(e) => {
+                  closeMobileMenu();
+                  if (item.href.startsWith("/#")) {
+                    const id = item.href.split("#")[1];
+                    setActiveSection(id);
+                    if (pathname === "/") {
+                      e.preventDefault();
+                      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+                      window.history.pushState(null, "", `/#${id}`);
+                    }
+                  }
+                }}
+                className="font-space text-3xl font-black uppercase text-[#111111] hover:text-[#3bd6c6] hover:drop-shadow-[0_0_8px_rgba(59,214,198,0.5)] transition-all"
               >
-                {item}
+                {item.name}
               </Link>
             ))}
           </div>
