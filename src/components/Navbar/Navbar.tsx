@@ -47,7 +47,7 @@ export default function Navbar() {
           }
         }
       }
-      
+
       if (current) {
         setActiveSection(current);
       } else if (window.scrollY < 200) {
@@ -57,12 +57,12 @@ export default function Navbar() {
     };
 
     window.addEventListener("scroll", handleScrollTarget, { passive: true });
-    
+
     // Set initial active state if loaded with hash
     if (window.location.hash) {
       setActiveSection(window.location.hash.slice(1));
     } else {
-      handleScrollTarget(); 
+      handleScrollTarget();
     }
 
     return () => window.removeEventListener("scroll", handleScrollTarget);
@@ -84,8 +84,8 @@ export default function Navbar() {
     <>
       <nav
         className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[calc(100%-2rem)] md:w-auto rounded-2xl md:rounded-full bg-[#ffffff]/80 backdrop-blur-xl border border-[#e6e6e6] shadow-sm ${scrolled
-            ? "top-3 sm:top-4 py-2 sm:py-3"
-            : "top-4 sm:top-6 py-3 sm:py-4"
+          ? "top-3 sm:top-4 py-2 sm:py-3"
+          : "top-4 sm:top-6 py-3 sm:py-4"
           }`}
       >
         <div className="w-full h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between md:justify-center md:gap-16 lg:gap-32">
@@ -95,7 +95,7 @@ export default function Navbar() {
             className="group flex items-center gap-2"
             onMouseEnter={handleLogoEnter}
           >
-            <span className="flex font-space text-xl sm:text-2xl font-black text-[#111111] tracking-tighter uppercase drop-shadow-sm mix-blend-multiply">
+            <span className="flex font-corpta text-xl sm:text-2xl font-medium text-[#111111] tracking-tighter uppercase drop-shadow-sm mix-blend-multiply">
               {logoText.split("").map((char, index) => (
                 <span
                   key={index}
@@ -117,8 +117,8 @@ export default function Navbar() {
               { name: "Demos", href: "/#demos" },
               { name: "Case Studies", href: "/case-studies" }
             ].map((item) => {
-              const isActive = item.href.startsWith("/#") 
-                ? activeSection === item.href.split("#")[1] 
+              const isActive = item.href.startsWith("/#")
+                ? activeSection === item.href.split("#")[1]
                 : pathname === item.href;
               return (
                 <Link
@@ -194,6 +194,18 @@ export default function Navbar() {
           className={`absolute top-0 right-0 w-full sm:w-[80%] max-w-sm h-full bg-[#ffffff] border-l border-[#e6e6e6]/50 flex flex-col justify-center px-12 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isMobileOpen ? "translate-x-0" : "translate-x-full"
             }`}
         >
+          {/* Dedicated Close Button */}
+          <button 
+            onClick={closeMobileMenu}
+            className="absolute top-6 right-6 sm:top-8 sm:right-8 w-12 h-12 flex items-center justify-center rounded-full bg-[#f5f5f5] text-[#111111] hover:bg-[#e0e0e0] transition-colors focus:outline-none"
+            aria-label="Close menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
           <div className="flex flex-col gap-10">
             {[
               { name: "Experience", href: "/#experience" },

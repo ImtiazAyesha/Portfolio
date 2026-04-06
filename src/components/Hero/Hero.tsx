@@ -121,8 +121,8 @@ export default function Hero() {
         {/* ======================= */}
         {/* BACKGROUND TEXT         */}
         {/* ======================= */}
-        <div className="absolute inset-0 z-[35] w-full h-full flex items-center justify-center pointer-events-none overflow-hidden">
-          <h1 ref={bgTextRef} className="font-space flex text-[clamp(8rem,25vw,30rem)] font-black leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap opacity-[0.25] md:opacity-[0.15]">
+        <div className="absolute inset-0 z-[35] w-full h-full flex items-start pt-[35vh] sm:pt-0 sm:items-center justify-center pointer-events-none overflow-hidden">
+          <h1 ref={bgTextRef} className="font-corpta flex text-[20vw] md:text-[clamp(8rem,19vw,28rem)] font-medium leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap opacity-[0.25] md:opacity-[0.15]">
             {title.split("").map((char, index) => (
               <span
                 key={index}
@@ -154,19 +154,18 @@ export default function Hero() {
           <div className="relative w-full max-w-[90rem] mx-auto h-full px-6 lg:px-12">
 
             {/* Top Left Text */}
-            <div className="absolute top-[20%] left-6 lg:left-12 z-20 pointer-events-auto">
+            <div className="absolute top-[24%] sm:top-[20%] w-full left-0 sm:w-auto sm:left-6 lg:left-12 z-20 pointer-events-auto flex justify-center sm:block">
               <div className="overflow-hidden">
-                <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90">
+                <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90 text-center sm:text-left">
                   Hey, I'm<br />
-                  {/* I'm Hassan */}
                 </p>
               </div>
             </div>
 
-            {/* Bottom Right Text */}
-            <div className="absolute bottom-[2%] sm:bottom-[5%] lg:bottom-[8%] right-6 lg:right-12 xl:right-16 z-20 pointer-events-auto">
+            {/* Bottom Right / Center (Mobile) Text */}
+            <div className="absolute top-[54%] sm:top-auto w-full left-0 sm:w-auto sm:left-auto sm:bottom-[5%] sm:right-6 lg:bottom-[8%] lg:right-12 xl:right-16 z-20 pointer-events-auto flex justify-center sm:block px-6 sm:px-0">
               <div className="overflow-hidden">
-                <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[260px] sm:max-w-[300px] lg:max-w-[360px]">
+                <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
                   A hybrid creative engineer specializing in AI infrastructure & motion-rich web apps.
                 </h2>
               </div>
@@ -200,19 +199,19 @@ export default function Hero() {
             <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[18vh] bg-[#e6e6e6]"></div>
 
             {/* Left Corner Bumps */}
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[20vw] h-[20vw] -left-[8vw] -bottom-[7vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[26vw] h-[26vw] -left-[12vw] -bottom-[15vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] -left-[20vw] md:-left-[8vw] -bottom-[18vw] md:-bottom-[7vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[65vw] h-[65vw] md:w-[26vw] md:h-[26vw] -left-[30vw] md:-left-[12vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
 
             {/* Middle Bottom Bumps */}
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[22vw] h-[22vw] left-[4vw] -bottom-[14vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[28vw] h-[28vw] left-[21vw] -bottom-[19vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[34vw] h-[34vw] left-[41vw] -bottom-[24vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[24vw] h-[24vw] right-[19vw] -bottom-[15vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] left-[10vw] md:left-[4vw] -bottom-[35vw] md:-bottom-[14vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[70vw] h-[70vw] md:w-[28vw] md:h-[28vw] left-[30vw] md:left-[21vw] -bottom-[48vw] md:-bottom-[19vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[85vw] h-[85vw] md:w-[34vw] md:h-[34vw] left-[15vw] md:left-[41vw] -bottom-[60vw] md:-bottom-[24vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[60vw] h-[60vw] md:w-[24vw] md:h-[24vw] right-[5vw] md:right-[19vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
 
             {/* Right Corner Bumps */}
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[18vw] h-[18vw] right-[5vw] -bottom-[9vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[30vw] h-[30vw] -right-[12vw] -bottom-[19vw]"></div>
-            <div className="absolute rounded-full bg-[#e6e6e6] w-[22vw] h-[22vw] -right-[8vw] -bottom-[11vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[45vw] h-[45vw] md:w-[18vw] md:h-[18vw] right-[12vw] md:right-[5vw] -bottom-[22vw] md:-bottom-[9vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[75vw] h-[75vw] md:w-[30vw] md:h-[30vw] -right-[30vw] md:-right-[12vw] -bottom-[48vw] md:-bottom-[19vw]"></div>
+            <div className="absolute rounded-full bg-[#e6e6e6] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] -right-[20vw] md:-right-[8vw] -bottom-[28vw] md:-bottom-[11vw]"></div>
           </div>
 
           {/* FRONT CLOUD LAYER */}
@@ -221,22 +220,21 @@ export default function Hero() {
             <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[15vh] bg-[#f2f2f2]"></div>
 
             {/* Left Corner Bumps */}
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[18vw] h-[18vw] -left-[8vw] -bottom-[8vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[24vw] h-[24vw] -left-[12vw] -bottom-[16vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[45vw] h-[45vw] md:w-[18vw] md:h-[18vw] -left-[20vw] md:-left-[8vw] -bottom-[20vw] md:-bottom-[8vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[60vw] h-[60vw] md:w-[24vw] md:h-[24vw] -left-[30vw] md:-left-[12vw] -bottom-[40vw] md:-bottom-[16vw]"></div>
 
             {/* Middle Bottom Bumps */}
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[20vw] h-[20vw] left-[5vw] -bottom-[15vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[26vw] h-[26vw] left-[22vw] -bottom-[20vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[32vw] h-[32vw] left-[42vw] -bottom-[25vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[22vw] h-[22vw] right-[20vw] -bottom-[16vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] left-[12vw] md:left-[5vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[65vw] h-[65vw] md:w-[26vw] md:h-[26vw] left-[35vw] md:left-[22vw] -bottom-[50vw] md:-bottom-[20vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[80vw] h-[80vw] md:w-[32vw] md:h-[32vw] left-[20vw] md:left-[42vw] -bottom-[62vw] md:-bottom-[25vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] right-[10vw] md:right-[20vw] -bottom-[40vw] md:-bottom-[16vw]"></div>
 
             {/* Right Corner Bumps */}
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[16vw] h-[16vw] right-[6vw] -bottom-[10vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[28vw] h-[28vw] -right-[12vw] -bottom-[20vw]"></div>
-            <div className="absolute rounded-full bg-[#f2f2f2] w-[20vw] h-[20vw] -right-[8vw] -bottom-[12vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[40vw] h-[40vw] md:w-[16vw] md:h-[16vw] right-[15vw] md:right-[6vw] -bottom-[25vw] md:-bottom-[10vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[70vw] h-[70vw] md:w-[28vw] md:h-[28vw] -right-[30vw] md:-right-[12vw] -bottom-[50vw] md:-bottom-[20vw]"></div>
+            <div className="absolute rounded-full bg-[#f2f2f2] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] -right-[20vw] md:-right-[8vw] -bottom-[30vw] md:-bottom-[12vw]"></div>
           </div>
         </div>
-
       </section>
     </div>
   );

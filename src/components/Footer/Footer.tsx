@@ -68,39 +68,58 @@ export default function Footer() {
   return (
     <footer
       id="contact"
-      className="relative z-20 bg-[#111111] px-6 md:px-12 pb-12 pt-8 md:pb-24 md:pt-16 text-[#FAFAFA]"
+      className="relative z-20 bg-[#111111] px-6 md:px-12 pb-12 pt-8 md:pb-24 md:pt-16 text-[#FAFAFA] overflow-x-clip"
     >
       {/* ======================= */}
       {/* CLOUD PATTERN (TOP BORDER) */}
       {/* ======================= */}
-      <div className="absolute inset-x-0 top-0 h-[20vw] transform -translate-y-[99%] overflow-hidden pointer-events-none z-10 w-full">
+      <div className="absolute inset-x-0 top-0 h-[20vw] transform -translate-y-[99%] overflow-visible pointer-events-none z-10 w-full">
+        
         {/* BACK CLOUD LAYER (Depth) */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 origin-bottom z-10">
           <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[18vh] bg-[#1d1d1d]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[20vw] h-[20vw] -left-[8vw] -bottom-[7vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[26vw] h-[26vw] -left-[12vw] -bottom-[15vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[22vw] h-[22vw] left-[4vw] -bottom-[14vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[28vw] h-[28vw] left-[21vw] -bottom-[19vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[34vw] h-[34vw] left-[41vw] -bottom-[24vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[24vw] h-[24vw] right-[19vw] -bottom-[15vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[18vw] h-[18vw] right-[5vw] -bottom-[9vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[30vw] h-[30vw] -right-[12vw] -bottom-[19vw]"></div>
-          <div className="absolute rounded-full bg-[#1d1d1d] w-[22vw] h-[22vw] -right-[8vw] -bottom-[11vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] -left-[20vw] md:-left-[8vw] -bottom-[18vw] md:-bottom-[7vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[65vw] h-[65vw] md:w-[26vw] md:h-[26vw] -left-[30vw] md:-left-[12vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] left-[10vw] md:left-[4vw] -bottom-[35vw] md:-bottom-[14vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[70vw] h-[70vw] md:w-[28vw] md:h-[28vw] left-[30vw] md:left-[21vw] -bottom-[48vw] md:-bottom-[19vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[85vw] h-[85vw] md:w-[34vw] md:h-[34vw] left-[15vw] md:left-[41vw] -bottom-[60vw] md:-bottom-[24vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[60vw] h-[60vw] md:w-[24vw] md:h-[24vw] right-[5vw] md:right-[19vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[45vw] h-[45vw] md:w-[18vw] md:h-[18vw] right-[12vw] md:right-[5vw] -bottom-[22vw] md:-bottom-[9vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[75vw] h-[75vw] md:w-[30vw] md:h-[30vw] -right-[30vw] md:-right-[12vw] -bottom-[48vw] md:-bottom-[19vw]"></div>
+          <div className="absolute rounded-full bg-[#1d1d1d] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] -right-[20vw] md:-right-[8vw] -bottom-[28vw] md:-bottom-[11vw]"></div>
         </div>
 
         {/* FRONT CLOUD LAYER */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 origin-bottom z-20">
           <div className="absolute bottom-[-10vh] left-[-10vw] right-[-10vw] h-[15vh] bg-[#111111]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[18vw] h-[18vw] -left-[8vw] -bottom-[8vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[24vw] h-[24vw] -left-[12vw] -bottom-[16vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[20vw] h-[20vw] left-[5vw] -bottom-[15vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[26vw] h-[26vw] left-[22vw] -bottom-[20vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[32vw] h-[32vw] left-[42vw] -bottom-[25vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[22vw] h-[22vw] right-[20vw] -bottom-[16vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[16vw] h-[16vw] right-[6vw] -bottom-[10vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[28vw] h-[28vw] -right-[12vw] -bottom-[20vw]"></div>
-          <div className="absolute rounded-full bg-[#111111] w-[20vw] h-[20vw] -right-[8vw] -bottom-[12vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#111111] w-[45vw] h-[45vw] md:w-[18vw] md:h-[18vw] -left-[20vw] md:-left-[8vw] -bottom-[20vw] md:-bottom-[8vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[60vw] h-[60vw] md:w-[24vw] md:h-[24vw] -left-[30vw] md:-left-[12vw] -bottom-[40vw] md:-bottom-[16vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#111111] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] left-[12vw] md:left-[5vw] -bottom-[38vw] md:-bottom-[15vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[65vw] h-[65vw] md:w-[26vw] md:h-[26vw] left-[35vw] md:left-[22vw] -bottom-[50vw] md:-bottom-[20vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[80vw] h-[80vw] md:w-[32vw] md:h-[32vw] left-[20vw] md:left-[42vw] -bottom-[62vw] md:-bottom-[25vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[55vw] h-[55vw] md:w-[22vw] md:h-[22vw] right-[10vw] md:right-[20vw] -bottom-[40vw] md:-bottom-[16vw]"></div>
+          
+          <div className="absolute rounded-full bg-[#111111] w-[40vw] h-[40vw] md:w-[16vw] md:h-[16vw] right-[15vw] md:right-[6vw] -bottom-[25vw] md:-bottom-[10vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[70vw] h-[70vw] md:w-[28vw] md:h-[28vw] -right-[30vw] md:-right-[12vw] -bottom-[50vw] md:-bottom-[20vw]"></div>
+          <div className="absolute rounded-full bg-[#111111] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] -right-[20vw] md:-right-[8vw] -bottom-[30vw] md:-bottom-[12vw]"></div>
         </div>
+      </div>
+
+      {/* FLOATING PARTICLES (Bubbles) - Moved into main footer area */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[20%] left-[8vw] w-[60px] h-[60px] rounded-full bg-[#81D8D0] shadow-[0_0_20px_#81D8D0] opacity-40 mix-blend-screen"></div>
+        <div className="absolute top-[60%] left-[3vw] w-[90px] h-[90px] rounded-full bg-[#81D8D0] shadow-[0_0_30px_#81D8D0] opacity-30 mix-blend-screen"></div>
+        <div className="absolute top-[80%] left-[15vw] w-[35px] h-[35px] rounded-full bg-[#81D8D0] shadow-[0_0_10px_#81D8D0] opacity-50 mix-blend-screen"></div>
+
+        <div className="absolute top-[15%] right-[4vw] w-[45px] h-[45px] rounded-full bg-[#81D8D0] shadow-[0_0_15px_#81D8D0] opacity-40 mix-blend-screen"></div>
+        <div className="absolute top-[65%] right-[3vw] w-[75px] h-[75px] rounded-full bg-[#81D8D0] shadow-[0_0_25px_#81D8D0] opacity-30 mix-blend-screen"></div>
+        <div className="absolute top-[30%] right-[15vw] w-[25px] h-[25px] rounded-full bg-[#81D8D0] shadow-[0_0_10px_#81D8D0] opacity-50 mix-blend-screen"></div>
+        <div className="absolute bottom-[5%] right-[25vw] w-[30px] h-[30px] rounded-full bg-[#81D8D0] shadow-[0_0_10px_#81D8D0] opacity-20 mix-blend-screen"></div>
       </div>
 
       <div className="relative mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-start md:items-end gap-16 z-10">
@@ -123,7 +142,7 @@ export default function Footer() {
             </span>
             <br />
             {/* Line 2 — teal colour kept */}
-            <span className="inline-flex flex-wrap gap-x-[0.25em] overflow-hidden text-[#81D8D0]">
+            <span className="inline-flex flex-wrap gap-x-[0.25em] overflow-hidden text-[#81D8D0] font-corpta font-medium">
               {["The", "Future."].map((w) => (
                 <span key={w} data-word className="inline-block">
                   {w}

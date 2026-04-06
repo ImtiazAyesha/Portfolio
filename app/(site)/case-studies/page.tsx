@@ -31,15 +31,15 @@ export default async function CaseStudiesPage() {
         <p className="text-[#3bd6c6] uppercase tracking-[0.3em] text-[10px] font-semibold font-space mb-2">
           Selected Work
         </p>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <h1 className="font-space font-black text-5xl md:text-[5rem] uppercase tracking-tighter text-[#111111] leading-none">
+        <div className="flex flex-row items-end justify-between gap-4 sm:gap-6 mt-4">
+          <h1 className="font-corpta font-medium text-[clamp(2.5rem,8vw,5rem)] uppercase tracking-tighter text-[#111111] leading-none">
             Case Studies
           </h1>
-          <div className="hidden md:flex flex-col items-end mb-2">
-            <span className="font-space text-4xl md:text-5xl font-black text-[#111111] leading-none tabular-nums">
+          <div className="flex flex-col items-end mb-1 md:mb-2 text-right">
+            <span className="font-space text-3xl md:text-5xl font-black text-[#111111] leading-none tabular-nums">
               {String(posts.length).padStart(2, "0")}
             </span>
-            <span className="text-[#888888] font-space font-medium text-[10px] tracking-widest uppercase mt-2">
+            <span className="text-[#888888] font-space font-medium text-[10px] md:text-xs tracking-widest uppercase mt-1">
               Total Projects
             </span>
           </div>

@@ -44,9 +44,6 @@ export default function Experience() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Execute purely on desktop limits, reserving performant normal-scroll for touch bounds
-    if (window.innerWidth < 768) return;
-
     let ctx = gsap.context(() => {
       const panels = gsap.utils.toArray(".portal-layer");
       
@@ -94,32 +91,10 @@ export default function Experience() {
   return (
     <section id="experience" className="relative z-20 bg-[#FAFAFA] clip-path-fix w-full">
       
-      {/* MOBILE FALLBACK (Classic Layout - Preserves performance natively on touch) */}
-      <div className="md:hidden flex flex-col pt-24 pb-32 px-6 gap-6 max-w-sm mx-auto">
-         <div className="mb-8">
-            <span className="font-space text-xs font-bold uppercase tracking-[0.2em] text-[#81D8D0] block mb-2">Career Path</span>
-            <h2 className="font-space text-4xl font-black uppercase tracking-tighter text-[#111111]">Experience.</h2>
-         </div>
-         {experienceData.slice(1).map((exp, i) => (
-            <div key={i} className="flex flex-col bg-white border border-[#E5E5E5] rounded-[2rem] p-8 shadow-sm">
-               <span className="font-space text-[10px] font-bold uppercase tracking-[0.2em] text-[#81D8D0] mb-6 inline-flex px-3 py-1 bg-[#81D8D0]/10 rounded-full w-fit">
-                 {exp.tag}
-               </span>
-               <h3 className="font-space text-3xl font-black uppercase tracking-tight text-[#111111] leading-[0.9] mb-4">
-                 {exp.role}
-               </h3>
-               <span className="font-space font-bold text-[#A0A0A0] mb-6 text-sm">{exp.company} // {exp.date}</span>
-               <p className="text-[#666666] leading-relaxed text-sm">
-                 {exp.description}
-               </p>
-            </div>
-         ))}
-      </div>
-
-      {/* DESKTOP 3D PORTAL PLUNGE (GSAP Pinned timeline bounds) */}
+      {/* 3D PORTAL PLUNGE (GSAP Pinned timeline bounds) */}
       <div 
          ref={sectionRef}
-         className="hidden md:block relative w-full h-screen overflow-hidden bg-[#FAFAFA]"
+         className="relative w-full h-screen overflow-hidden bg-[#FAFAFA]"
       >
          {experienceData.map((exp: any, i: number) => (
             <div 
@@ -130,43 +105,43 @@ export default function Experience() {
                 <div className="portal-content relative w-full h-full flex flex-col items-center justify-center will-change-transform">
                    {exp.isIntro ? (
                       /* INITIATION LAYER 0 */
-                      <div className="max-w-[100rem] w-full px-12 xl:px-24 flex flex-col justify-center">
-                         <div className="flex items-center gap-3 mb-6">
-                           <span className="block w-16 h-px bg-[#81D8D0]" />
-                           <span className="font-space text-lg font-bold uppercase tracking-[0.2em] text-[#81D8D0]">Career Path</span>
+                      <div className="max-w-[100rem] w-full px-6 md:px-12 xl:px-24 flex flex-col justify-center">
+                         <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                           <span className="block w-8 md:w-16 h-px bg-[#81D8D0]" />
+                           <span className="font-space text-sm md:text-lg font-bold uppercase tracking-[0.2em] text-[#81D8D0]">Career Path</span>
                          </div>
-                         <h2 className="font-space text-[12vw] font-black uppercase tracking-tighter leading-[0.82] mb-12 text-[#111111]">
+                         <h2 className="font-corpta text-[15vw] md:text-[12vw] font-medium uppercase tracking-tighter leading-[0.82] mb-8 md:mb-12 text-[#111111]">
                            The<br/>Experience.
                          </h2>
-                         <p className="max-w-3xl text-[#555555] text-3xl font-medium leading-relaxed">
+                         <p className="max-w-3xl text-[#555555] text-lg md:text-3xl font-medium leading-relaxed">
                            A chronological journey tracking the intersection of artificial intelligence and elite frontend engineering. Keep natively scrolling to plunge deeply.
                          </p>
                       </div>
                    ) : (
                       /* JOB DATA LAYERS 1-3 */
-                      <div className="w-full h-full max-w-[120rem] mx-auto px-12 xl:px-24 flex flex-col justify-center">
+                      <div className="w-full h-full max-w-[120rem] mx-auto px-6 md:px-12 xl:px-24 flex flex-col justify-center">
                          {/* Gargantuan Dimensional Watermark Text */}
-                         <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-space font-black text-[clamp(8rem,18vw,24rem)] whitespace-nowrap opacity-[0.03] select-none pointer-events-none tracking-tighter ${exp.theme.text} mix-blend-normal`}>
+                         <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-space font-black text-[clamp(6rem,18vw,24rem)] whitespace-nowrap opacity-[0.03] select-none pointer-events-none tracking-tighter ${exp.theme.text} mix-blend-normal`}>
                            {exp.company}
                          </span>
 
-                         <div className="relative z-10 w-full flex items-center justify-between gap-12 mt-16 lg:mt-32">
-                            <div className="flex flex-col gap-8 lg:gap-12 w-1/2 max-w-4xl">
-                               <span className={`inline-flex px-6 py-2 rounded-full border ${exp.theme.tagStyle} font-space text-sm font-bold uppercase tracking-widest backdrop-blur-md w-fit`}>
+                         <div className="relative z-10 w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mt-12 lg:mt-32">
+                            <div className="flex flex-col gap-6 lg:gap-12 w-full md:w-1/2 max-w-4xl">
+                               <span className={`inline-flex px-4 md:px-6 py-2 rounded-full border ${exp.theme.tagStyle} font-space text-xs md:text-sm font-bold uppercase tracking-widest backdrop-blur-md w-fit`}>
                                   {exp.tag}
                                </span>
-                               <h3 className={`font-space text-6xl xl:text-[8rem] font-black uppercase ${exp.theme.text} leading-[0.85] tracking-tighter mix-blend-normal`}>
+                               <h3 className={`font-space text-5xl md:text-6xl xl:text-[8rem] font-black uppercase ${exp.theme.text} leading-[0.85] tracking-tighter mix-blend-normal`}>
                                   {exp.role}
                                </h3>
                             </div>
-                            <div className="flex flex-col w-1/3 min-w-[300px] gap-6 max-w-lg">
-                               <span className={`font-space text-2xl lg:text-3xl font-bold ${exp.theme.accent} uppercase tracking-widest opacity-90`}>
+                            <div className="flex flex-col w-full md:w-1/3 md:min-w-[300px] gap-3 md:gap-6 max-w-lg">
+                               <span className={`font-space text-xl lg:text-3xl font-bold ${exp.theme.accent} uppercase tracking-widest opacity-90`}>
                                   {exp.date}
                                </span>
-                               <span className={`font-space text-lg font-bold ${exp.theme.text} opacity-40 uppercase tracking-widest`}>
+                               <span className={`font-space text-sm md:text-lg font-bold ${exp.theme.text} opacity-40 uppercase tracking-widest`}>
                                   {exp.company} //
                                </span>
-                               <p className={`text-xl font-medium leading-relaxed ${exp.theme.text} opacity-80 mt-2`}>
+                               <p className={`text-base md:text-xl font-medium leading-relaxed ${exp.theme.text} opacity-80 mt-1 md:mt-2`}>
                                   {exp.description}
                                </p>
                             </div>

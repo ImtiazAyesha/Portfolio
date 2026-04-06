@@ -107,21 +107,23 @@ export default function LiveDemos() {
       xPercent: isMobile ? 0 : 100,
       yPercent: isMobile ? 100 : 0,
       width: isMobile ? "100vw" : "35vw",
-      height: isMobile ? "45dvh" : "100dvh",
+      height: "100dvh",
       bottom: isMobile ? 0 : "auto",
-      top: isMobile ? "auto" : 0,
+      top: isMobile ? 0 : 0,
       right: 0,
-      position: "absolute",
+      position: "fixed",
     });
 
     gsap.set(".modal-stagger", { y: 30, opacity: 0 });
     gsap.set(closeRef.current, { scale: 0.5, opacity: 0, rotation: -90 });
 
     tl.to(videoRef.current, {
-      top: 0, left: 0,
-      width: isMobile ? "100vw" : "65vw",
-      height: isMobile ? "55dvh" : "100dvh",
+      top: isMobile ? activeData.rect.top : 0, 
+      left: isMobile ? activeData.rect.left : 0,
+      width: isMobile ? activeData.rect.width : "65vw",
+      height: isMobile ? activeData.rect.height : "100dvh",
       borderRadius: 0,
+      autoAlpha: isMobile ? 0 : 1,
       duration: 1.2,
       ease: "power4.inOut",
     }, "start");
@@ -146,7 +148,7 @@ export default function LiveDemos() {
                 Live Previews
               </span>
             </div>
-            <h2 className="font-space text-5xl md:text-7xl font-black uppercase tracking-tighter text-[#111111]">
+            <h2 className="font-corpta text-5xl md:text-7xl font-medium uppercase tracking-tighter text-[#111111]">
               Demos.
             </h2>
           </div>
@@ -156,7 +158,7 @@ export default function LiveDemos() {
         </div>
 
         <div className="w-full max-w-[90rem] mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 w-full mt-8 h-auto min-h-[600px] md:h-[600px] lg:h-[700px] relative">
+          <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 grid-flow-dense gap-3 sm:gap-4 md:gap-6 w-full mt-8 h-auto min-h-[450px] md:min-h-[600px] lg:h-[700px] relative pb-4 md:pb-0">
             {projectsData.map((project, index) => {
               const isFeature = index === 0;
               const isHovered = hoveredIndex === index;
@@ -167,8 +169,16 @@ export default function LiveDemos() {
                   data-bento-card
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  className={`relative rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group bg-[#111111] shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-transform duration-500 will-change-transform hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)]
-                    ${isFeature ? 'md:col-span-2 md:row-span-2 z-10' : 'col-span-1 row-span-1 aspect-square md:aspect-auto z-0'}
+                  onClick={(e) => {
+                    // Mobile direct interaction: on touch we want them to pop the video directly 
+                    // since hover effects are limited. We bind it to the entire card.
+                    if (window.innerWidth < 768) {
+                      openProject(project, e);
+                    }
+                  }}
+                  className={`relative w-full rounded-2xl md:rounded-[2rem] overflow-hidden group bg-[#111111] shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-[1s] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer md:cursor-auto
+                    ${isFeature ? 'col-span-2 aspect-[4/3] md:aspect-auto md:col-start-2 md:col-span-2 md:row-span-2 z-10' : 'col-span-1 row-span-1 aspect-square md:aspect-auto z-0'}
+                    ${isHovered ? 'scale-[1.03] z-[50] shadow-[0_30px_60px_rgba(0,0,0,0.4)]' : ''}
                   `}
                 >
                   <video
@@ -189,37 +199,49 @@ export default function LiveDemos() {
                   <div className={`absolute left-0 bottom-0 flex flex-col justify-end w-full h-full pointer-events-none transition-all duration-[1s] ease-[cubic-bezier(0.16,1,0.3,1)]
                     ${isFeature ? 'p-8 md:p-12' : 'p-6 items-start'}
                   `}>
-                    <span className={`block font-space font-bold uppercase tracking-[0.2em] transition-all duration-500
-                      ${isHovered ? 'text-[#81D8D0] mb-3' : 'text-[#81D8D0]/70 mb-2'}
-                      ${isFeature ? 'text-xs md:text-sm' : 'text-[10px] sm:text-xs'}
-                    `}>
-                      {project.category}
-                    </span>
-                    
-                    <h3 className={`font-space font-black uppercase tracking-tighter text-[#FAFAFA] transition-all duration-500
-                      ${isHovered ? 'text-white' : 'text-white/80'}
-                      ${isFeature ? 'text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight' : 'text-xl sm:text-2xl leading-[1.1] truncate w-full pr-4'}
-                    `}>
-                      {project.title}
-                    </h3>
+                    {/* ── Desktop & Tablet: Full Headings & Descriptions ── */}
+                    <div className="hidden md:flex flex-col w-full">
+                      <span className={`block font-space font-bold uppercase tracking-[0.2em] transition-all duration-500
+                        ${isHovered ? 'text-[#81D8D0] mb-3' : 'text-[#81D8D0]/70 mb-2'}
+                        ${isFeature ? 'text-xs md:text-sm' : 'text-[10px] sm:text-xs'}
+                      `}>
+                        {project.category}
+                      </span>
+                      
+                      <h3 className={`font-space font-black uppercase tracking-tighter text-[#FAFAFA] transition-all duration-500
+                        ${isHovered ? 'text-white' : 'text-white/80'}
+                        ${isFeature ? 'text-4xl md:text-5xl lg:text-6xl mb-4 leading-tight' : 'text-xl sm:text-2xl leading-[1.1] truncate w-full pr-4'}
+                      `}>
+                        {project.title}
+                      </h3>
+                      
+                      <div className={`overflow-hidden transition-all duration-[1s] ease-[cubic-bezier(0.16,1,0.3,1)]
+                         ${isHovered ? 'max-h-[300px] opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform translate-y-4'}
+                      `}>
+                         {isFeature && <div className="h-[2px] bg-white/20 w-16 mb-4" />}
+                         
+                         <p className={`text-[#cccccc] mb-8 font-medium leading-relaxed drop-shadow-md
+                            ${isFeature ? 'max-w-sm text-sm md:text-base' : 'text-xs line-clamp-2 mt-2 truncate w-full whitespace-normal opacity-0 md:opacity-100 hidden sm:block'}
+                         `}>
+                           {project.description}
+                         </p>
+                         
+                         <div 
+                           onClick={(e) => openProject(project, e)}
+                           className="inline-flex items-center gap-3 bg-[#FAFAFA]/10 backdrop-blur-md border border-white/20 text-[#FAFAFA] px-5 py-2.5 rounded-full font-space font-bold uppercase tracking-widest text-[10px] sm:text-xs shadow-lg hover:bg-white hover:text-black transition-colors pointer-events-auto cursor-pointer"
+                         >
+                            Play Video
+                            <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                         </div>
+                      </div>
+                    </div>
 
-                    <div className={`overflow-hidden transition-all duration-[1s] ease-[cubic-bezier(0.16,1,0.3,1)]
-                       ${isHovered ? 'max-h-[300px] opacity-100 transform translate-y-0' : 'max-h-0 opacity-0 transform translate-y-4'}
-                    `}>
-                       {isFeature && <div className="h-[2px] bg-white/20 w-16 mb-4" />}
-                       
-                       <p className={`text-[#cccccc] mb-8 font-medium leading-relaxed drop-shadow-md
-                          ${isFeature ? 'max-w-sm text-sm md:text-base' : 'text-xs line-clamp-2 mt-2 truncate w-full whitespace-normal opacity-0 md:opacity-100 hidden sm:block'}
-                       `}>
-                         {project.description}
-                       </p>
-                       
-                       <div 
-                         onClick={(e) => openProject(project, e)}
-                         className="inline-flex items-center gap-3 bg-[#FAFAFA]/10 backdrop-blur-md border border-white/20 text-[#FAFAFA] px-5 py-2.5 rounded-full font-space font-bold uppercase tracking-widest text-[10px] sm:text-xs shadow-lg hover:bg-white hover:text-black transition-colors pointer-events-auto cursor-pointer"
-                       >
-                          Play Video
-                          <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    {/* ── Mobile: Pure Play CTA (Removes cluttered headings) ── */}
+                    <div className="md:hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+                       <div className="flex items-center justify-center w-12 h-12 bg-black/50 backdrop-blur-md border border-white/20 text-white rounded-full shadow-2xl">
+                          <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z" />
                           </svg>
                        </div>
@@ -234,6 +256,17 @@ export default function LiveDemos() {
 
       {activeData && (
         <div className="fixed inset-0 z-[100] pointer-events-auto">
+          {/* Highest Layer Global Close Button */}
+          <button
+            ref={closeRef}
+            onClick={closeProject}
+            className="absolute z-[110] top-6 right-6 md:top-12 md:right-12 w-12 h-12 md:w-14 md:h-14 bg-[#333333]/90 backdrop-blur-md hover:bg-[#FAFAFA] text-[#FAFAFA] hover:text-[#111111] rounded-full flex items-center justify-center transition-colors duration-300 cursor-pointer shadow-xl border border-white/10"
+          >
+            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
           <video
             ref={videoRef}
             src={activeData.project.video}
@@ -241,46 +274,49 @@ export default function LiveDemos() {
             muted
             loop
             playsInline
-            className="absolute object-cover z-[101]"
+            className="absolute object-cover z-[105]"
           />
 
           <div
             ref={panelRef}
-            className="bg-[#111111] z-[102] flex flex-col justify-center p-8 md:p-16 lg:p-24 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] overflow-y-auto hide-scrollbar"
+            className="bg-[#111111] z-[102] flex flex-col items-start justify-start md:justify-center w-full min-h-screen px-6 pt-24 pb-12 md:p-16 lg:p-24 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] overflow-y-auto hide-scrollbar"
           >
-            <button
-              ref={closeRef}
-              onClick={closeProject}
-              className="absolute top-6 right-6 md:top-12 md:right-12 w-14 h-14 bg-[#333333] hover:bg-[#FAFAFA] text-[#FAFAFA] hover:text-[#111111] border border-[#555555] rounded-full flex items-center justify-center transition-colors duration-300 z-50 cursor-pointer"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="max-w-lg">
-              <span className="modal-stagger block font-space text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-[#81D8D0] mb-4">
+            {/* ── Unified Responsive Content Layout ── */}
+            <div className="w-full max-w-lg">
+              <span className="modal-stagger block font-space text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-[#81D8D0] mb-3 md:mb-4">
                 {activeData.project.category}
               </span>
-              <h2 className="modal-stagger font-space text-4xl md:text-6xl font-black uppercase tracking-tighter text-[#FAFAFA] leading-[0.9] mb-8">
+              <h2 className="modal-stagger font-space text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter text-[#FAFAFA] leading-[0.9] mb-6 md:mb-8">
                 {activeData.project.title}
               </h2>
               
-              <div className="modal-stagger flex flex-col gap-2 mb-10">
-                <span className="text-[#555555] font-space text-sm uppercase tracking-widest font-bold">Role</span>
-                <span className="text-[#A0A0A0] text-lg font-medium">{activeData.project.role}</span>
+              {/* ── Inline Mobile Video Flow ── */}
+              <div className="md:hidden modal-stagger relative w-full aspect-video rounded-2xl overflow-hidden mb-8 shadow-2xl border border-[#222222]">
+                <video
+                  src={activeData.project.video}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
               </div>
 
-              <div className="modal-stagger w-12 h-px bg-[#333333] mb-10" />
+              <div className="modal-stagger flex flex-col gap-1 md:gap-2 mb-8 md:mb-10">
+                <span className="text-[#555555] font-space text-xs md:text-sm uppercase tracking-widest font-bold">Role</span>
+                <span className="text-[#A0A0A0] text-base md:text-lg font-medium">{activeData.project.role}</span>
+              </div>
 
-              <p className="modal-stagger text-[#A0A0A0] text-lg md:text-xl leading-relaxed mb-12">
+              <div className="modal-stagger w-12 h-px bg-[#333333] mb-8 md:mb-10" />
+
+              <p className="modal-stagger text-[#A0A0A0] text-base md:text-xl leading-relaxed mb-10 md:mb-12">
                 {activeData.project.description}
               </p>
 
-              <button className="modal-stagger group relative inline-flex items-center gap-4 bg-[#81D8D0] hover:bg-[#6BCFC5] text-[#111111] px-8 py-4 rounded-full font-space font-bold uppercase tracking-wider text-sm transition-colors duration-300 overflow-hidden">
+              <button className="modal-stagger group relative inline-flex items-center gap-4 bg-[#81D8D0] hover:bg-[#6BCFC5] text-[#111111] px-6 py-3.5 md:px-8 md:py-4 rounded-full font-space font-bold uppercase tracking-wider text-xs md:text-sm transition-colors duration-300 overflow-hidden">
                 <span className="relative z-10">View Case Study</span>
-                <span className="relative z-10 w-8 h-8 rounded-full bg-[#111111]/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
-                  <svg className="w-4 h-4 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="relative z-10 w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#111111]/10 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                  <svg className="w-3.5 h-3.5 md:w-4 md:h-4 -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </span>

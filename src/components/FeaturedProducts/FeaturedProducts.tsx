@@ -39,6 +39,27 @@ export default function FeaturedProducts() {
   const spotlightRef = useRef<HTMLDivElement>(null);
   
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [activeDot, setActiveDot] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const itemWidth = e.currentTarget.scrollWidth / productsData.length;
+    const index = Math.round(scrollLeft / itemWidth);
+    if (index !== activeDot && index >= 0 && index < productsData.length) {
+      setActiveDot(index);
+    }
+  };
+
+  const scrollToDot = (index: number) => {
+    setActiveDot(index);
+    if (scrollContainerRef.current) {
+      const items = scrollContainerRef.current.children;
+      if (items[index]) {
+        items[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -143,6 +164,9 @@ export default function FeaturedProducts() {
     >
       {/* ── Cinematics: Film Grain & Vignette ── */}
       <style dangerouslySetInnerHTML={{__html: `
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
         @keyframes film-noise {
           0%, 100% { transform: translate(0, 0); }
           10% { transform: translate(-2%, -2%); }
@@ -187,7 +211,7 @@ export default function FeaturedProducts() {
               Featured Work
             </span>
           </div>
-          <h2 className="theme-heading font-space text-5xl md:text-7xl lg:text-[6rem] font-black uppercase tracking-tighter text-[#111111] leading-[0.9]">
+          <h2 className="theme-heading font-corpta text-5xl md:text-7xl lg:text-[6rem] font-medium uppercase tracking-tighter text-[#111111] leading-[0.9]">
             Selected<br />Products.
           </h2>
         </div>
@@ -196,8 +220,12 @@ export default function FeaturedProducts() {
         </p>
       </div>
 
-      {/* ── Staggered Asymmetric Grid ── */}
-      <div className="products-grid grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-x-12 md:gap-y-24 mt-16 px-6 md:px-12 max-w-[65rem] mx-auto relative z-10 w-full">
+      {/* ── Staggered Asymmetric Grid (Mobile Horizontal Swipe) ── */}
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="products-grid hide-scroll flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 gap-6 md:gap-x-12 md:gap-y-24 mt-16 px-6 md:px-12 max-w-[65rem] mx-auto relative z-10 w-full pb-10"
+      >
         {productsData.map((product, index) => {
           const isHovered = hoveredIndex === index;
           const isOtherHovered = hoveredIndex !== null && hoveredIndex !== index;
@@ -209,8 +237,8 @@ export default function FeaturedProducts() {
               key={index}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`product-card-wrap relative group w-full ${offsetClass} transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer mx-auto max-w-[26rem]
-                ${isOtherHovered ? 'opacity-20 blur-sm scale-[0.97]' : 'opacity-100 blur-0 scale-100'}
+              className={`product-card-wrap snap-center shrink-0 relative group w-[85vw] sm:w-[350px] md:w-full ${offsetClass} transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer mx-auto max-w-[26rem]
+                ${isOtherHovered ? 'md:opacity-20 md:blur-sm md:scale-[0.97]' : 'opacity-100 blur-0 scale-100'}
               `}
             >
               {/* Image Card Container */}
@@ -265,6 +293,20 @@ export default function FeaturedProducts() {
             </div>
           );
         })}
+      </div>
+
+      {/* ── Mobile Navigation Dots ── */}
+      <div className="flex md:hidden justify-center items-center gap-3 mt-2 mb-8 relative z-20">
+        {productsData.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToDot(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`transition-all duration-300 rounded-full ${
+              activeDot === i ? 'w-8 h-2 bg-[#81D8D0]' : 'w-2 h-2 bg-[#555555]'
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
