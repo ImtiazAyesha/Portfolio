@@ -254,27 +254,19 @@ export default function FeaturedProducts() {
                   priority={index < 2}
                 />
 
-                {/* Subdued Gradient Overlay (Darkens on Hover) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+                {/* Smooth Dark Gradient Overlay (Rises on Hover) */}
+                <div className={`absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent pointer-events-none transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
 
-                {/* Spotlight Text Clip-Path Reveal Overlay */}
-                <div className={`absolute inset-0 bg-[#050505]/70 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-                  {/* Top line sliding down */}
-                  <div className="overflow-hidden">
-                    <span 
-                      className={`block font-space text-2xl sm:text-4xl font-black uppercase tracking-[0.1em] text-[#FAFAFA] transition-transform duration-700 delay-100 ease-[cubic-bezier(0.16,1,0.3,1)] ${isHovered ? 'translate-y-0' : 'translate-y-[120%]'}`}
-                    >
-                      View
-                    </span>
-                  </div>
-                  {/* Bottom line sliding up */}
-                  <div className="overflow-hidden mt-1 sm:mt-2">
-                    <span 
-                      className={`block font-space text-2xl sm:text-4xl font-black uppercase tracking-[0.1em] text-[#81D8D0] transition-transform duration-700 delay-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${isHovered ? 'translate-y-0' : '-translate-y-[120%]'}`}
-                    >
-                      Product
-                    </span>
-                  </div>
+                {/* Bottom-Anchored CTA Pill */}
+                <div className={`absolute inset-x-0 bottom-0 pb-8 px-6 flex justify-center items-end pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                   <div 
+                     className="inline-flex items-center gap-3 bg-[#333333]/90 hover:bg-[#444444] backdrop-blur-md border border-white/10 text-[#FAFAFA] px-7 py-3.5 rounded-full font-space font-bold uppercase tracking-widest text-[11px] shadow-2xl transition-colors duration-300 pointer-events-auto cursor-pointer"
+                   >
+                     View Product
+                     <svg className="w-4 h-4 text-[#81D8D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                     </svg>
+                   </div>
                 </div>
               </div>
 

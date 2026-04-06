@@ -95,6 +95,22 @@ export default function Hero() {
         ease: "power1.out",
       }, 0);
 
+      // Primary text hides UP rapidly and securely before swap
+      scrollTl.to(".hero-scroll-primary", {
+        y: -100,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in",
+      }, 0);
+
+      // Secondary black text smartly glides up after primary vanishes
+      scrollTl.to(".hero-scroll-secondary", {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
+        ease: "power2.out",
+      }, 0.35);
+
       // Background text becomes pure black as cloud covers it
       if (bgTextRef.current) {
         scrollTl.to(bgTextRef.current, {
@@ -116,12 +132,12 @@ export default function Hero() {
       <section
         id="hero"
         ref={containerRef}
-        className="relative flex h-[85dvh] md:h-screen w-full items-center justify-center overflow-hidden bg-[#ffffff]"
+        className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#ffffff]"
       >
         {/* ======================= */}
         {/* BACKGROUND TEXT         */}
         {/* ======================= */}
-        <div className="absolute inset-0 z-[35] w-full h-full flex items-start pt-[25vh] sm:pt-0 sm:items-center justify-center pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 z-[35] w-full h-full flex items-start pt-[35vh] sm:pt-0 sm:items-center justify-center pointer-events-none overflow-hidden">
           <h1 ref={bgTextRef} className="font-corpta flex text-[20vw] md:text-[clamp(8rem,19vw,28rem)] font-medium leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap opacity-[0.25] md:opacity-[0.15]">
             {title.split("").map((char, index) => (
               <span
@@ -138,7 +154,7 @@ export default function Hero() {
         {/* ======================= */}
         {/* THE CENTER IMAGE        */}
         {/* ======================= */}
-        <div className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[100%] max-h-[80dvh] md:max-h-none md:h-[85vh] pointer-events-none">
+        <div className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none">
           <img
             ref={imageRef}
             src="/Main.png"
@@ -154,20 +170,38 @@ export default function Hero() {
           <div className="relative w-full max-w-[90rem] mx-auto h-full px-6 lg:px-12">
 
             {/* Top Left Text */}
-            <div className="absolute top-[18%] sm:top-[20%] w-full left-0 sm:w-auto sm:left-6 lg:left-12 z-20 pointer-events-auto flex justify-center sm:block">
-              <div className="overflow-hidden">
-                <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90 text-center sm:text-left">
-                  Hey, I'm<br />
-                </p>
+            <div className="absolute top-[24%] sm:top-[20%] w-full left-0 sm:w-auto sm:left-6 lg:left-12 z-50 pointer-events-auto flex justify-center sm:block">
+              <div className="relative w-full sm:w-max min-w-[200px]">
+                {/* Primary text that fades OUT */}
+                <div className="hero-scroll-primary">
+                  <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90 text-center sm:text-left">
+                    Hey, I'm<br />
+                  </p>
+                </div>
+                {/* Secondary text that fades IN */}
+                <div className="hero-scroll-secondary absolute top-0 left-0 w-full sm:w-max opacity-0 translate-y-6">
+                  <p className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] text-center sm:text-left whitespace-nowrap">
+                    Scroll down.
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Bottom Right / Center (Mobile) Text */}
-            <div className="absolute top-[48%] sm:top-auto w-full left-0 sm:w-auto sm:left-auto sm:bottom-[5%] sm:right-6 lg:bottom-[8%] lg:right-12 xl:right-16 z-20 pointer-events-auto flex justify-center sm:block px-6 sm:px-0">
-              <div className="overflow-hidden">
-                <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
-                  A hybrid creative engineer specializing in AI infrastructure & motion-rich web apps.
-                </h2>
+            <div className="absolute top-[54%] sm:top-auto w-full left-0 sm:w-auto sm:left-auto sm:bottom-[5%] sm:right-6 lg:bottom-[8%] lg:right-12 xl:right-16 z-50 pointer-events-auto flex justify-center sm:block px-6 sm:px-0">
+              <div className="relative min-h-[100px] w-full flex justify-center sm:block">
+                {/* Primary text that fades OUT */}
+                <div className="hero-scroll-primary">
+                  <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
+                    A hybrid creative engineer specializing in AI infrastructure & motion-rich web apps.
+                  </h2>
+                </div>
+                {/* Secondary text that fades IN */}
+                <div className="hero-scroll-secondary absolute top-0 sm:right-0 w-full opacity-0 translate-y-6 flex justify-center sm:justify-end">
+                  <h2 className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
+                    To explore the creative timeline.
+                  </h2>
+                </div>
               </div>
             </div>
 
