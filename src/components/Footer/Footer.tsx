@@ -111,7 +111,7 @@ export default function Footer() {
       </div>
 
       {/* FLOATING PARTICLES (Bubbles) - Moved into main footer area */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-[15] pointer-events-none">
         <div className="absolute top-[20%] left-[8vw] w-[60px] h-[60px] rounded-full bg-[#81D8D0] shadow-[0_0_20px_#81D8D0] opacity-40 mix-blend-screen"></div>
         <div className="absolute top-[60%] left-[3vw] w-[90px] h-[90px] rounded-full bg-[#81D8D0] shadow-[0_0_30px_#81D8D0] opacity-30 mix-blend-screen"></div>
         <div className="absolute top-[80%] left-[15vw] w-[35px] h-[35px] rounded-full bg-[#81D8D0] shadow-[0_0_10px_#81D8D0] opacity-50 mix-blend-screen"></div>
@@ -122,7 +122,7 @@ export default function Footer() {
         <div className="absolute bottom-[5%] right-[25vw] w-[30px] h-[30px] rounded-full bg-[#81D8D0] shadow-[0_0_10px_#81D8D0] opacity-20 mix-blend-screen"></div>
       </div>
 
-      <div className="relative mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-start md:items-end gap-16 z-10">
+      <div className="relative mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-start md:items-end gap-16 z-[20]">
 
         {/* ── Left column: headline + email CTA ── */}
         <div className="flex flex-col gap-8 max-w-2xl">
@@ -203,7 +203,6 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Hassan. All rights reserved.
             </p>
           </div>
-
         </div>
       </div>
     </footer>

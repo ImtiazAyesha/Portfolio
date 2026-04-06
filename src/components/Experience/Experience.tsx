@@ -110,7 +110,7 @@ export default function Experience() {
                            <span className="block w-8 md:w-16 h-px bg-[#81D8D0]" />
                            <span className="font-space text-sm md:text-lg font-bold uppercase tracking-[0.2em] text-[#81D8D0]">Career Path</span>
                          </div>
-                         <h2 className="font-corpta text-[15vw] md:text-[12vw] font-medium uppercase tracking-tighter leading-[0.82] mb-8 md:mb-12 text-[#111111]">
+                         <h2 className="font-corpta text-[10.5vw] md:text-[12vw] xl:text-[10vw] font-medium uppercase tracking-tighter leading-[0.82] mb-8 md:mb-12 text-[#111111]">
                            The<br/>Experience.
                          </h2>
                          <p className="max-w-3xl text-[#555555] text-lg md:text-3xl font-medium leading-relaxed">
@@ -130,7 +130,7 @@ export default function Experience() {
                                <span className={`inline-flex px-4 md:px-6 py-2 rounded-full border ${exp.theme.tagStyle} font-space text-xs md:text-sm font-bold uppercase tracking-widest backdrop-blur-md w-fit`}>
                                   {exp.tag}
                                </span>
-                               <h3 className={`font-space text-5xl md:text-6xl xl:text-[8rem] font-black uppercase ${exp.theme.text} leading-[0.85] tracking-tighter mix-blend-normal`}>
+                               <h3 className={`font-corpta text-[11.5vw] sm:text-[9vw] md:text-7xl xl:text-[7rem] font-medium uppercase ${exp.theme.text} leading-[0.85] tracking-tighter mix-blend-normal pb-2`}>
                                   {exp.role}
                                </h3>
                             </div>
