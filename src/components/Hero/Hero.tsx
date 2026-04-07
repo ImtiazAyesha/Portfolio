@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -15,7 +16,13 @@ export default function Hero() {
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
   const bgTextRef = useRef<HTMLHeadingElement>(null);
   const subheadlineRef = useRef<HTMLHeadingElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const leftTextRef = useRef<HTMLDivElement>(null);
+  const rightTextRef = useRef<HTMLDivElement>(null);
+  const leftWatermarkRef = useRef<HTMLDivElement>(null);
+  const rightWatermarkRef = useRef<HTMLDivElement>(null);
+  const baseLayerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -25,7 +32,8 @@ export default function Hero() {
       if (greetingRef.current) gsap.set(greetingRef.current, { yPercent: 100 });
       if (validLetters.length > 0) gsap.set(validLetters, { yPercent: 100, opacity: 0 });
       gsap.set([subheadlineRef.current], { autoAlpha: 0, y: 20 });
-      if (imageRef.current) gsap.set(imageRef.current, { autoAlpha: 0, scale: 0.95 });
+      if (baseLayerRef.current) gsap.set(baseLayerRef.current, { autoAlpha: 0, x: 100, clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)", webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)" });
+      if (overlayRef.current) gsap.set(overlayRef.current, { autoAlpha: 0, x: -100, clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)", webkitClipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)" });
 
       if (greetingRef.current) {
         introTl.to(greetingRef.current, { yPercent: 0, duration: 1.2, ease: "power4.out" });
@@ -41,14 +49,14 @@ export default function Hero() {
         }, "-=0.9");
       }
 
-      if (imageRef.current) {
-        introTl.to(imageRef.current, {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 1.5,
-          ease: "power4.out",
-        }, "-=1.2");
-      }
+      introTl.to([baseLayerRef.current, overlayRef.current], {
+        autoAlpha: 1,
+        x: 0,
+        duration: 1.5,
+        ease: "power4.out",
+      }, "-=1.2");
+
+
 
       introTl.to([subheadlineRef.current], {
         autoAlpha: 1,
@@ -59,71 +67,121 @@ export default function Hero() {
       }, "-=1.2");
 
       // --- Cinematic Cloud Transition ---
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=150%", // Determines how long the user scrolls to complete the transition
-          scrub: 1,
-          pin: true,
-        }
-      });
-
-      // Scale up the cloud layers
-      // Back layer
-      scrollTl.to(".cloud-layer-back", {
-        scale: 15,
-        duration: 1,
-        ease: "power2.inOut",
-        transformOrigin: "bottom center"
-      }, 0);
-
-      // Front layer scales slightly larger/faster
-      scrollTl.to(".cloud-layer-front", {
-        scale: 20,
-        duration: 1,
-        ease: "power2.inOut",
-        transformOrigin: "bottom center"
-      }, 0);
-
-      // Bubbles floating up and fading
-      scrollTl.to(".bubble", {
-        y: -300,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: "power1.out",
-      }, 0);
-
-      // Primary text hides UP rapidly and securely before swap
-      scrollTl.to(".hero-scroll-primary", {
-        y: -100,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.in",
-      }, 0);
-
-      // Secondary black text smartly glides up after primary vanishes
-      scrollTl.to(".hero-scroll-secondary", {
-        y: 0,
-        opacity: 1,
-        duration: 0.4,
-        ease: "power2.out",
-      }, 0.35);
-
-      // Background text becomes pure black as cloud covers it
-      if (bgTextRef.current) {
-        scrollTl.to(bgTextRef.current, {
-          opacity: 1,
-          duration: 1,
-          ease: "power2.inOut",
-        }, 0);
-      }
+      // (Scroll animation removed as per user request. Clouds remain static.)
 
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
+
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    let clientX = 0;
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX;
+    } else {
+      clientX = (e as React.MouseEvent).clientX;
+    }
+
+    const { innerWidth } = window;
+    const xPercentage = (clientX / innerWidth) * 100;
+
+    // Image mask animation
+    gsap.to(overlayRef.current, {
+      clipPath: `polygon(0% 0%, ${xPercentage}% 0%, ${xPercentage}% 100%, 0% 100%)`,
+      webkitClipPath: `polygon(0% 0%, ${xPercentage}% 0%, ${xPercentage}% 100%, 0% 100%)`,
+      duration: 0.4,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+
+    // Mirror mask the base layer to prevent image bleed underneath transparencies
+    if (baseLayerRef.current) {
+      gsap.to(baseLayerRef.current, {
+        clipPath: `polygon(${xPercentage}% 0%, 100% 0%, 100% 100%, ${xPercentage}% 100%)`,
+        webkitClipPath: `polygon(${xPercentage}% 0%, 100% 0%, 100% 100%, ${xPercentage}% 100%)`,
+        duration: 0.4,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+
+    // Subtle parallax image shift (inverse to mouse position)
+    const normalizedX = (clientX / innerWidth) * 2 - 1; // -1 to 1
+    const maxShift = 100; // pixels
+    if (imageContainerRef.current) {
+      gsap.to(imageContainerRef.current, {
+        x: normalizedX * -maxShift,
+        duration: 0.8,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    }
+
+    // Content fade animation based on cursor side
+    let leftOp = 1;
+    let rightOp = 1;
+    let leftWmOp = 0.05;
+    let rightWmOp = 0.05;
+
+    if (xPercentage < 45) { // Hovering Left
+      leftOp = 1;
+      rightOp = 0;
+      leftWmOp = 0.05;
+      rightWmOp = 0;
+    } else if (xPercentage > 55) { // Hovering Right
+      leftOp = 0;
+      rightOp = 1;
+      leftWmOp = 0;
+      rightWmOp = 0.05;
+    }
+
+    if (innerWidth >= 640) {
+      if (leftTextRef.current) gsap.to(leftTextRef.current, { opacity: leftOp, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+      if (rightTextRef.current) gsap.to(rightTextRef.current, { opacity: rightOp, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+      if (leftWatermarkRef.current) gsap.to(leftWatermarkRef.current, { opacity: leftWmOp, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+      if (rightWatermarkRef.current) gsap.to(rightWatermarkRef.current, { opacity: rightWmOp, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    // Reset image mask
+    gsap.to(overlayRef.current, {
+      clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)",
+      webkitClipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)",
+      duration: 0.5,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+
+    // Reset base layer mask
+    if (baseLayerRef.current) {
+      gsap.to(baseLayerRef.current, {
+        clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)",
+        webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)",
+        duration: 0.5,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+
+    // Reset parallax image shift
+    if (imageContainerRef.current) {
+      gsap.to(imageContainerRef.current, {
+        x: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    }
+
+    // Reset content opacity only on desktop
+    if (window.innerWidth >= 640) {
+      if (leftTextRef.current) gsap.to(leftTextRef.current, { opacity: 1, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+      if (rightTextRef.current) gsap.to(rightTextRef.current, { opacity: 1, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+      if (leftWatermarkRef.current) gsap.to(leftWatermarkRef.current, { opacity: 0.05, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+      if (rightWatermarkRef.current) gsap.to(rightWatermarkRef.current, { opacity: 0.05, duration: 0.5, ease: "power2.out", overwrite: "auto" });
+    }
+  };
 
   const title = "HASSAN";
 
@@ -132,12 +190,16 @@ export default function Hero() {
       <section
         id="hero"
         ref={containerRef}
-        className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#ffffff]"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={handleMouseLeave}
+        className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-[#ffffff] touch-pan-y"
       >
         {/* ======================= */}
         {/* BACKGROUND TEXT         */}
         {/* ======================= */}
-        <div className="absolute inset-0 z-[35] w-full h-full flex items-start pt-[35vh] sm:pt-0 sm:items-center justify-center pointer-events-none overflow-hidden">
+        <div className="hidden absolute inset-0 z-[35] w-full h-full flex items-start pt-[35vh] sm:pt-0 sm:items-center justify-center pointer-events-none overflow-hidden">
           <h1 ref={bgTextRef} className="font-corpta flex text-[20vw] md:text-[clamp(8rem,19vw,28rem)] font-medium leading-none tracking-tighter text-[#111111] uppercase whitespace-nowrap opacity-[0.25] md:opacity-[0.15]">
             {title.split("").map((char, index) => (
               <span
@@ -154,54 +216,75 @@ export default function Hero() {
         {/* ======================= */}
         {/* THE CENTER IMAGE        */}
         {/* ======================= */}
-        <div className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none">
-          <img
-            ref={imageRef}
-            src="/Main.png"
-            alt="Hassan"
-            className="h-full w-auto object-contain object-bottom"
-          />
+        <div
+          ref={imageContainerRef}
+          className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none"
+        >
+          {/* Base Layer: Logic / Coder */}
+          <div ref={baseLayerRef} className="absolute inset-0 w-full h-full">
+            <Image
+              src="/hero/Coder.png"
+              alt="Hassan - Logic"
+              fill
+              priority
+              sizes="100vw"
+              className="object-contain object-bottom"
+            />
+          </div>
+
+          {/* Overlay Layer: Creative / Psychology */}
+          <div
+            ref={overlayRef}
+            className="absolute inset-0 w-full h-full"
+            style={{
+              clipPath: 'polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)',
+              WebkitClipPath: 'polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)'
+            }}
+          >
+            <Image
+              src="/hero/Psychology.png"
+              alt="Hassan - Creative"
+              fill
+              priority
+              sizes="100vw"
+              className="object-contain object-bottom"
+            />
+          </div>
         </div>
 
         {/* ======================= */}
         {/* FOREGROUND CONTENT      */}
         {/* ======================= */}
         <div ref={heroContentRef} className="absolute inset-0 z-[40] w-full h-full pointer-events-none">
-          <div className="relative w-full max-w-[90rem] mx-auto h-full px-6 lg:px-12">
+          <div className="relative w-full max-w-[90rem] mx-auto h-full px-6 lg:px-16 flex flex-col sm:flex-row items-center justify-start sm:justify-between pt-[18vh] sm:pt-0 pb-[10vh] sm:pb-0">
 
-            {/* Top Left Text */}
-            <div className="absolute top-[24%] sm:top-[20%] w-full left-0 sm:w-auto sm:left-6 lg:left-12 z-50 pointer-events-auto flex justify-center sm:block">
-              <div className="relative w-full sm:w-max min-w-[200px]">
-                {/* Primary text that fades OUT */}
-                <div className="hero-scroll-primary">
-                  <p ref={greetingRef} className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] drop-shadow-sm mix-blend-multiply opacity-90 text-center sm:text-left">
-                    Hey, I'm<br />
-                  </p>
+            {/* Left Box (which acts as Unified Box on Mobile) */}
+            <div ref={leftTextRef} className="z-50 pointer-events-auto w-full sm:w-auto sm:max-w-[400px] lg:max-w-[480px] flex justify-center sm:justify-start mb-auto sm:mb-0 sm:-mt-[5vh] cursor-pointer">
+              <div className="hero-scroll-primary w-full text-center sm:text-left">
+                <div className="overflow-hidden">
+                  <h2 ref={greetingRef} className="font-corpta text-[2.2rem] md:text-[3rem] lg:text-[4rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-none uppercase drop-shadow-md">
+                    <span className="sm:hidden">STRATEGY <span className="text-[#a0a0a0] font-light text-[2rem]">&</span><br/>&lt;TECHNICAL&gt;</span>
+                    <span className="hidden sm:inline">STRATEGY</span>
+                  </h2>
                 </div>
-                {/* Secondary text that fades IN */}
-                <div className="hero-scroll-secondary absolute top-0 left-0 w-full sm:w-max opacity-0 translate-y-6">
-                  <p className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#111111] font-medium leading-[1.3] text-center sm:text-left whitespace-nowrap">
-                    Scroll down.
+                <div className="overflow-hidden">
+                  <p className="font-sans text-[15px] sm:text-[17px] lg:text-[19px] text-[#909090] font-light leading-[1.6] max-w-[340px] sm:max-w-[320px] mx-auto sm:mx-0">
+                    <span className="sm:hidden">AI Product Manager. Creating products & distractions for the post AGI world driven by Strategy, Psychology & Deep Execution.</span>
+                    <span className="hidden sm:inline">AI Product Manager. Creating products & distractions for the post AGI world driven by Strategy + Psychology.</span>
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Right / Center (Mobile) Text */}
-            <div className="absolute top-[54%] sm:top-auto w-full left-0 sm:w-auto sm:left-auto sm:bottom-[5%] sm:right-6 lg:bottom-[8%] lg:right-12 xl:right-16 z-50 pointer-events-auto flex justify-center sm:block px-6 sm:px-0">
-              <div className="relative min-h-[100px] w-full flex justify-center sm:block">
-                {/* Primary text that fades OUT */}
-                <div className="hero-scroll-primary">
-                  <h2 ref={subheadlineRef} className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] drop-shadow-sm mix-blend-multiply opacity-90 max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
-                    A hybrid creative engineer specializing in AI infrastructure & motion-rich web apps.
-                  </h2>
-                </div>
-                {/* Secondary text that fades IN */}
-                <div className="hero-scroll-secondary absolute top-0 sm:right-0 w-full opacity-0 translate-y-6 flex justify-center sm:justify-end">
-                  <h2 className="font-sans text-lg sm:text-xl lg:text-2xl text-[#111111] font-medium leading-[1.35] max-w-[300px] lg:max-w-[360px] text-center sm:text-right">
-                    To explore the creative timeline.
-                  </h2>
-                </div>
+            {/* Right Box (Hidden entirely on Mobile) */}
+            <div ref={rightTextRef} className="hidden sm:flex z-50 pointer-events-auto sm:w-auto sm:max-w-[400px] lg:max-w-[480px] justify-start sm:pl-8 sm:-mt-[5vh] cursor-pointer">
+              <div ref={subheadlineRef} className="hero-scroll-primary w-full text-center sm:text-left">
+                <h2 className="font-corpta text-[2.2rem] md:text-[3rem] lg:text-[4rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-none uppercase drop-shadow-md">
+                  &lt;TECHNICAL&gt;
+                </h2>
+                <p className="font-sans text-base sm:text-[17px] lg:text-[19px] text-[#909090] font-light leading-[1.6] max-w-[320px] mx-auto sm:mx-0">
+                  Focusing on technical depth, deep execution, and constantly experimenting with what's next.
+                </p>
               </div>
             </div>
 
@@ -213,18 +296,26 @@ export default function Hero() {
         {/* ======================= */}
         <div className="cloud-wrapper absolute inset-0 z-[30] pointer-events-none overflow-visible">
 
-          {/* FLOATING PARTICLES */}
-          <div className="particles absolute inset-0 z-[25]">
-            {/* Left reference bubbles */}
-            <div className="bubble absolute bottom-[12vh] left-[8vw] w-[60px] h-[60px] rounded-full bg-[#3bd6c6] shadow-[0_0_20px_#3bd6c6] opacity-90"></div>
-            <div className="bubble absolute bottom-[5vh] -left-[1vw] w-[90px] h-[90px] rounded-full bg-[#3bd6c6] shadow-[0_0_30px_#3bd6c6] opacity-80"></div>
-            <div className="bubble absolute bottom-[8vh] left-[13vw] w-[35px] h-[35px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-100"></div>
+          {/* WATERMARK TEXTURES (Professional Background Elements) */}
+          <div className="watermarks absolute inset-0 z-[25] pointer-events-none overflow-hidden">
 
-            {/* Right reference bubbles */}
-            <div className="bubble absolute bottom-[18vh] right-[4vw] w-[45px] h-[45px] rounded-full bg-[#3bd6c6] shadow-[0_0_15px_#3bd6c6] opacity-90"></div>
-            <div className="bubble absolute bottom-[8vh] -right-[1vw] w-[75px] h-[75px] rounded-full bg-[#3bd6c6] shadow-[0_0_25px_#3bd6c6] opacity-80"></div>
-            <div className="bubble absolute bottom-[15vh] right-[9vw] w-[25px] h-[25px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-100"></div>
-            <div className="bubble absolute bottom-[5vh] right-[14vw] w-[30px] h-[30px] rounded-full bg-[#3bd6c6] shadow-[0_0_10px_#3bd6c6] opacity-70"></div>
+            {/* Left Side: Strategy / Psychology Watermark */}
+            <div ref={leftWatermarkRef} className="absolute hidden sm:block bottom-[22vh] left-[4vw] xl:left-[8vw] text-[#111] opacity-[0.05] font-sans font-bold text-xl lg:text-2xl leading-[2] whitespace-pre select-none tracking-widest text-left transform -rotate-3">
+              {`SYSTEMS THINKING
+  COGNITIVE_LOAD
+product.strategy()
+  <AGI_ALIGNMENT>`}
+            </div>
+
+            {/* Right Side: Technical / Code Watermark */}
+            <div ref={rightWatermarkRef} className="absolute hidden sm:block bottom-[22vh] right-[4vw] xl:right-[10vw] text-[#111] opacity-[0.05] font-mono font-medium text-xl lg:text-2xl leading-[2] whitespace-pre select-none text-left transform rotate-2">
+              {`  <React.FC>
+{ scale: "global" }
+  await trainModel()
+<NextJS> TypeScript
+  { depth: true }`}
+            </div>
+
           </div>
 
           {/* BACK CLOUD LAYER (Depth) */}
