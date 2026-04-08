@@ -32,7 +32,12 @@ export default function Hero() {
       if (greetingRef.current) gsap.set(greetingRef.current, { yPercent: 100 });
       if (validLetters.length > 0) gsap.set(validLetters, { yPercent: 100, opacity: 0 });
       gsap.set([subheadlineRef.current], { autoAlpha: 0, y: 20 });
-      if (baseLayerRef.current) gsap.set(baseLayerRef.current, { autoAlpha: 0, y: 30, clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)", webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)" });
+      const isMobile = window.innerWidth < 640;
+      const baseClip = isMobile 
+        ? "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)" 
+        : "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)";
+
+      if (baseLayerRef.current) gsap.set(baseLayerRef.current, { autoAlpha: 0, y: 30, clipPath: baseClip, webkitClipPath: baseClip });
       if (overlayRef.current) gsap.set(overlayRef.current, { autoAlpha: 0, y: 30, clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)", webkitClipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)" });
 
       if (greetingRef.current) {
@@ -70,6 +75,8 @@ export default function Hero() {
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (window.innerWidth < 640) return;
+
     let clientX = 0;
     if ('touches' in e) {
       clientX = e.touches[0].clientX;
@@ -140,6 +147,8 @@ export default function Hero() {
   };
 
   const handleMouseLeave = () => {
+    if (window.innerWidth < 640) return;
+
     // Reset image mask
     gsap.to(overlayRef.current, {
       clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)",
@@ -216,10 +225,7 @@ export default function Hero() {
           className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none"
         >
           {/* Base Layer: Creative / Psychology (Full Body) */}
-          <div ref={baseLayerRef} className="absolute inset-0 w-full h-full" style={{
-            clipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)',
-            WebkitClipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)'
-          }}>
+          <div ref={baseLayerRef} className="absolute inset-0 w-full h-full max-sm:[clip-path:polygon(50%_0%,100%_0%,100%_100%,50%_100%)] max-sm:[--webkit-clip-path:polygon(50%_0%,100%_0%,100%_100%,50%_100%)] sm:[clip-path:polygon(50%_0%,100%_0%,100%_100%,0%_100%,0%_55%,50%_55%)] sm:[--webkit-clip-path:polygon(50%_0%,100%_0%,100%_100%,0%_100%,0%_55%,50%_55%)]">
             <Image
               src="/hero/Psychology.png"
               alt="Hassan - Creative"
