@@ -32,8 +32,8 @@ export default function Hero() {
       if (greetingRef.current) gsap.set(greetingRef.current, { yPercent: 100 });
       if (validLetters.length > 0) gsap.set(validLetters, { yPercent: 100, opacity: 0 });
       gsap.set([subheadlineRef.current], { autoAlpha: 0, y: 20 });
-      if (baseLayerRef.current) gsap.set(baseLayerRef.current, { autoAlpha: 0, x: 100, clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)", webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)" });
-      if (overlayRef.current) gsap.set(overlayRef.current, { autoAlpha: 0, x: -100, clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)", webkitClipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)" });
+      if (baseLayerRef.current) gsap.set(baseLayerRef.current, { autoAlpha: 0, y: 30, clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)", webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)" });
+      if (overlayRef.current) gsap.set(overlayRef.current, { autoAlpha: 0, y: 30, clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)", webkitClipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)" });
 
       if (greetingRef.current) {
         introTl.to(greetingRef.current, { yPercent: 0, duration: 1.2, ease: "power4.out" });
@@ -51,12 +51,10 @@ export default function Hero() {
 
       introTl.to([baseLayerRef.current, overlayRef.current], {
         autoAlpha: 1,
-        x: 0,
+        y: 0,
         duration: 1.5,
         ease: "power4.out",
       }, "-=1.2");
-
-
 
       introTl.to([subheadlineRef.current], {
         autoAlpha: 1,
@@ -65,10 +63,7 @@ export default function Hero() {
         stagger: 0.1,
         ease: "power3.out",
       }, "-=1.2");
-
-      // --- Cinematic Cloud Transition ---
-      // (Scroll animation removed as per user request. Clouds remain static.)
-
+      
     }, containerRef);
 
     return () => ctx.revert();
@@ -84,21 +79,22 @@ export default function Hero() {
 
     const { innerWidth } = window;
     const xPercentage = (clientX / innerWidth) * 100;
+    const maskPercentage = 100 - xPercentage;
 
-    // Image mask animation
+    // Image mask animation exclusively on overlay (Coder)
     gsap.to(overlayRef.current, {
-      clipPath: `polygon(0% 0%, ${xPercentage}% 0%, ${xPercentage}% 100%, 0% 100%)`,
-      webkitClipPath: `polygon(0% 0%, ${xPercentage}% 0%, ${xPercentage}% 100%, 0% 100%)`,
+      clipPath: `polygon(0% 0%, ${maskPercentage}% 0%, ${maskPercentage}% 100%, 0% 100%)`,
+      webkitClipPath: `polygon(0% 0%, ${maskPercentage}% 0%, ${maskPercentage}% 100%, 0% 100%)`,
       duration: 0.4,
       ease: "power2.out",
       overwrite: "auto",
     });
 
-    // Mirror mask the base layer to prevent image bleed underneath transparencies
+    // L-Shape mask for Psychology to hide the sketch hands on the left, but keep the hoodie.
     if (baseLayerRef.current) {
       gsap.to(baseLayerRef.current, {
-        clipPath: `polygon(${xPercentage}% 0%, 100% 0%, 100% 100%, ${xPercentage}% 100%)`,
-        webkitClipPath: `polygon(${xPercentage}% 0%, 100% 0%, 100% 100%, ${xPercentage}% 100%)`,
+        clipPath: `polygon(${maskPercentage}% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, ${maskPercentage}% 55%)`,
+        webkitClipPath: `polygon(${maskPercentage}% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, ${maskPercentage}% 55%)`,
         duration: 0.4,
         ease: "power2.out",
         overwrite: "auto",
@@ -153,11 +149,10 @@ export default function Hero() {
       overwrite: "auto",
     });
 
-    // Reset base layer mask
     if (baseLayerRef.current) {
       gsap.to(baseLayerRef.current, {
-        clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)",
-        webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)",
+        clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)",
+        webkitClipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)",
         duration: 0.5,
         ease: "power2.out",
         overwrite: "auto",
@@ -220,11 +215,14 @@ export default function Hero() {
           ref={imageContainerRef}
           className="absolute inset-x-0 bottom-0 z-[40] flex justify-center h-[85vh] pointer-events-none"
         >
-          {/* Base Layer: Logic / Coder */}
-          <div ref={baseLayerRef} className="absolute inset-0 w-full h-full">
+          {/* Base Layer: Creative / Psychology (Full Body) */}
+          <div ref={baseLayerRef} className="absolute inset-0 w-full h-full" style={{
+            clipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)',
+            WebkitClipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 55%, 50% 55%)'
+          }}>
             <Image
-              src="/hero/Coder.png"
-              alt="Hassan - Logic"
+              src="/hero/Psychology.png"
+              alt="Hassan - Creative"
               fill
               priority
               sizes="100vw"
@@ -232,7 +230,7 @@ export default function Hero() {
             />
           </div>
 
-          {/* Overlay Layer: Creative / Psychology */}
+          {/* Overlay Layer: Logic / Coder (Head Only, Masked on Left) */}
           <div
             ref={overlayRef}
             className="absolute inset-0 w-full h-full"
@@ -242,8 +240,8 @@ export default function Hero() {
             }}
           >
             <Image
-              src="/hero/Psychology.png"
-              alt="Hassan - Creative"
+              src="/hero/Coder.png"
+              alt="Hassan - Logic"
               fill
               priority
               sizes="100vw"
@@ -262,28 +260,28 @@ export default function Hero() {
             <div ref={leftTextRef} className="z-50 pointer-events-auto w-full sm:w-auto sm:max-w-[400px] lg:max-w-[480px] flex justify-center sm:justify-start mb-auto sm:mb-0 sm:-mt-[5vh] cursor-pointer">
               <div className="hero-scroll-primary w-full text-center sm:text-left">
                 <div className="overflow-hidden">
-                  <h2 ref={greetingRef} className="font-corpta text-[2.2rem] md:text-[3rem] lg:text-[4rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-none uppercase drop-shadow-md">
-                    <span className="sm:hidden">STRATEGY <span className="text-[#a0a0a0] font-light text-[2rem]">&</span><br/>&lt;TECHNICAL&gt;</span>
-                    <span className="hidden sm:inline">STRATEGY</span>
+                  <h2 ref={greetingRef} className="font-corpta text-[1.8rem] sm:text-[2.2rem] md:text-[3rem] lg:text-[4rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-none uppercase drop-shadow-md">
+                    <span className="sm:hidden">&lt;AI SOLUTION ARCHITECT&gt; <span className="text-[#a0a0a0] font-light text-[1.6rem] sm:text-[2rem]">&</span><br />Psychology-led product strategist</span>
+                    <span className="hidden sm:inline">&lt;AI SOLUTION ARCHITECT&gt;</span>
                   </h2>
                 </div>
                 <div className="overflow-hidden">
                   <p className="font-sans text-[15px] sm:text-[17px] lg:text-[19px] text-[#909090] font-light leading-[1.6] max-w-[340px] sm:max-w-[320px] mx-auto sm:mx-0">
                     <span className="sm:hidden">AI Product Manager. Creating products & distractions for the post AGI world driven by Strategy, Psychology & Deep Execution.</span>
-                    <span className="hidden sm:inline">AI Product Manager. Creating products & distractions for the post AGI world driven by Strategy + Psychology.</span>
+                    <span className="hidden sm:inline">Focusing on technical depth, deep execution, and constantly experimenting with what's next.</span>
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Right Box (Hidden entirely on Mobile) */}
-            <div ref={rightTextRef} className="hidden sm:flex z-50 pointer-events-auto sm:w-auto sm:max-w-[400px] lg:max-w-[480px] justify-start sm:pl-8 sm:-mt-[5vh] cursor-pointer">
-              <div ref={subheadlineRef} className="hero-scroll-primary w-full text-center sm:text-left">
-                <h2 className="font-corpta text-[2.2rem] md:text-[3rem] lg:text-[4rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-none uppercase drop-shadow-md">
-                  &lt;TECHNICAL&gt;
+            <div ref={rightTextRef} className="hidden sm:flex z-50 pointer-events-auto sm:w-auto sm:max-w-[500px] lg:max-w-none justify-end sm:-mt-[5vh] cursor-pointer lg:translate-x-4 xl:translate-x-12">
+              <div ref={subheadlineRef} className="hero-scroll-primary w-full text-center sm:text-right">
+                <h2 className="font-corpta text-[1.5rem] sm:text-[1.8rem] md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.7rem] tracking-[-0.02em] text-[#3bd6c6] font-medium mb-3 md:mb-5 leading-[1.05] uppercase drop-shadow-md whitespace-nowrap">
+                  Psychology-led<br />Product<br />Strategist
                 </h2>
-                <p className="font-sans text-base sm:text-[17px] lg:text-[19px] text-[#909090] font-light leading-[1.6] max-w-[320px] mx-auto sm:mx-0">
-                  Focusing on technical depth, deep execution, and constantly experimenting with what's next.
+                <p className="font-sans text-base sm:text-[17px] lg:text-[19px] text-[#909090] font-light leading-[1.6] max-w-[320px] mx-auto sm:ml-auto sm:mr-0">
+                  AI Product Manager. Creating products & distractions for the post AGI world driven by Strategy + Psychology.
                 </p>
               </div>
             </div>
@@ -299,16 +297,8 @@ export default function Hero() {
           {/* WATERMARK TEXTURES (Professional Background Elements) */}
           <div className="watermarks absolute inset-0 z-[25] pointer-events-none overflow-hidden">
 
-            {/* Left Side: Strategy / Psychology Watermark */}
-            <div ref={leftWatermarkRef} className="absolute hidden sm:block bottom-[22vh] left-[4vw] xl:left-[8vw] text-[#111] opacity-[0.05] font-sans font-bold text-xl lg:text-2xl leading-[2] whitespace-pre select-none tracking-widest text-left transform -rotate-3">
-              {`SYSTEMS THINKING
-  COGNITIVE_LOAD
-product.strategy()
-  <AGI_ALIGNMENT>`}
-            </div>
-
-            {/* Right Side: Technical / Code Watermark */}
-            <div ref={rightWatermarkRef} className="absolute hidden sm:block bottom-[22vh] right-[4vw] xl:right-[10vw] text-[#111] opacity-[0.05] font-mono font-medium text-xl lg:text-2xl leading-[2] whitespace-pre select-none text-left transform rotate-2">
+            {/* Left Side: Technical / Code Watermark */}
+            <div ref={leftWatermarkRef} className="absolute hidden sm:block bottom-[22vh] left-[4vw] xl:left-[8vw] text-[#111] opacity-[0.05] font-mono font-medium text-xl lg:text-2xl leading-[2] whitespace-pre select-none tracking-widest text-left transform -rotate-3">
               {`  <React.FC>
 { scale: "global" }
   await trainModel()
@@ -316,6 +306,13 @@ product.strategy()
   { depth: true }`}
             </div>
 
+            {/* Right Side: Strategy / Psychology Watermark */}
+            <div ref={rightWatermarkRef} className="absolute hidden sm:block bottom-[22vh] right-[4vw] xl:right-[10vw] text-[#111] opacity-[0.05] font-sans font-bold text-xl lg:text-2xl leading-[2] whitespace-pre select-none tracking-widest text-left transform rotate-2">
+              {`SYSTEMS THINKING
+  COGNITIVE_LOAD
+product.strategy()
+  <AGI_ALIGNMENT>`}
+            </div>
           </div>
 
           {/* BACK CLOUD LAYER (Depth) */}
